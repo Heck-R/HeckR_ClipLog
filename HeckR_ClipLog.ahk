@@ -636,6 +636,8 @@ setQuickClip(place){
 	else
 		quickClipFiles[place] := true
 
+	gosub SetBasicData
+
 	sourceFile := clipLogDir . "\" . clipFileName
 	destinationFile := quickClipLogDir . "\" . place . "." . clipType
 	
@@ -646,6 +648,10 @@ setQuickClip(place){
 peekQuickClip(place){
 	global
 	
+	if(!clipSwitchOn)
+		GDIP_StartDraw()
+	clipSwitchOn := true
+
 	if(quickClipFiles[place]){
 		
 		userClip := false
@@ -660,11 +666,6 @@ peekQuickClip(place){
 			clipType := clipTextExt
 		else
 			clipType := clipErrorExt
-
-		if(!clipSwitchOn)
-			GDIP_StartDraw()
-
-		clipSwitchOn := true
 
 		filePathToRead := quickClipLogDir . "\" . place . "." . clipType
 		gosub ReadClipFromFile
