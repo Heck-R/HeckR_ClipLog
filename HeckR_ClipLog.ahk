@@ -52,7 +52,6 @@ SetupClipLab:
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 
 	userClipRestoreTime := 1000
-	pasteAfterTime := 100
 
 	clipSwitchOn := false
 	clipCursorPos := 0
@@ -426,6 +425,14 @@ return
 #if
 
 ;-------------------------------------------------------
+
+waitAfterPaste:
+	tmpClip := ClipboardAll
+	tmpTime := 50 + (StrLen(tmpClip) / 20000)
+	sleep tmpTime
+return
+
+;-------------------------------------------------------
 ;-------------------------------------------------------
 
 saveClipb(clipTypeID){
@@ -603,7 +610,7 @@ return
 instantPaste(place){
 	global
 	
-	if(place < clipFiles.length()){
+	if(userClip && place < clipFiles.length()){
 		userClip := false
 
 		clipSave := ClipboardAll
@@ -612,24 +619,20 @@ instantPaste(place){
 		
 		gosub SetBasicData
 		filePathToRead := clipLogDir . "\" . clipFileName
-
+		
 		gosub ReadClipFromFile
 		Send, ^v
-		sleep %pasteAfterTime%
+		gosub waitAfterPaste
 
 		Clipboard := clipSave
 		clipCursorPos := clipCursorTmp
 		gosub SetBasicData
 		
-		settimer UserClipTrue, -%userClipRestoreTime%
-		
+		gosub waitAfterPaste
+		userClip := true
 	}
 
 }
-
-UserClipTrue:
-	userClip := true
-return
 
 setQuickClip(place){
 	global
@@ -705,7 +708,7 @@ peekQuickClip(place){
 pasteQuickClip(place){
 	global
 	
-	if(quickClipFiles[place]){
+	if(userClip && quickClipFiles[place]){
 		userClip := false
 
 		clipSave := ClipboardAll
@@ -723,13 +726,14 @@ pasteQuickClip(place){
 
 		gosub ReadClipFromFile
 		Send, ^v
-		sleep %pasteAfterTime%
+		gosub waitAfterPaste
 
 		Clipboard := clipSave
 		clipCursorPos := clipCursorTmp
 		gosub SetBasicData
 		
-		settimer UserClipTrue, -%userClipRestoreTime%
+		gosub waitAfterPaste
+		userClip := true
 		
 	}
 
