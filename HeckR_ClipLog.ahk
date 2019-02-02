@@ -17,7 +17,7 @@ OnClipboardChange("saveClipb")
 
 ;-------------------------------------------------------
 
-gosub setupDrawing
+GDIP_SetUp()
 
 ;-------------------------------------------------------
 
@@ -88,47 +88,6 @@ SetupClipLab:
 	
 
 return
-
-setupDrawing:
-
-	SysGet, monitorNum, MonitorCount
-	
-	leftMostPoint = 0
-	topMostPoint = 0
-
-	SysGet, topLeftMonitor, MonitorPrimary
-
-	Loop, %monitorNum%
-	{
-		SysGet, monitorBorderPos, Monitor, 2
-		if( (monitorBorderPosLeft <= leftMostPoint) && (monitorBorderPosTop <= topMostPoint) )
-		{
-			leftMostPoint=%monitorBorderPosLeft%
-			topMostPoint=%monitorBorderPosTop%
-			topLeftMonitor=%A_Index%
-		}
-	}
-	
-	SysGet, fullWidth, 78
-	SysGet, fullHeight, 79
-	
-	GDIP_SetUp(fullWidth, fullHeight)
-
-return
-
-local_GDIP_Update(){
-	global
-	UpdateLayeredWindow(hwnd1, hdc, leftMostPoint, topMostPoint, Width, Height)
-}
-
-local_GDIP_EndDraw() {
-	global
-	UpdateLayeredWindow(hwnd1, hdc, leftMostPoint, topMostPoint, Width, Height)
-	SelectObject(hdc, obm)
-	DeleteObject(hbm)
-	DeleteDC(hdc)
-	Gdip_DeleteGraphics(G)
-}
 
 ;-------------------------------------------------------
 
@@ -456,8 +415,8 @@ return
 	LWin Up::
 	Alt Up::
 		GDIP_Clean()
-		local_GDIP_Update()
-    	local_GDIP_EndDraw()
+		GDIP_Update()
+    	GDIP_EndDraw()
 
 		clipSwitchOn := false
 		userClip := true
@@ -596,7 +555,7 @@ return
 ShowClipPreview:
 	
 	GDIP_Clean()
-	local_GDIP_Update()
+	GDIP_Update()
 
 	if(clipType == clipTextExt){
 		if(StrLen(Clipboard) > 1000)
@@ -632,7 +591,7 @@ ShowClipPreview:
 		MouseGetPos, xPos, yPos
 		
 		Gdip_DrawImage(G, clipPicBitmap, -leftMostPoint+xPos+16, -topMostPoint+yPos+16, clipPicW, clipPicH)
-		local_GDIP_Update()
+		GDIP_Update()
 	}
 	else{
 		ToolTip %clipCursorPos%`n%Clipboard%
@@ -722,7 +681,7 @@ peekQuickClip(place){
 	}
 	else{
 		GDIP_Clean()
-		local_GDIP_Update()
+		GDIP_Update()
 		ToolTip, No clipboard data can be found at this index
 	}
 
