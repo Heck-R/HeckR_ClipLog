@@ -634,6 +634,12 @@ return
 setQuickClip(place){
 	global
 
+	if( clipFiles.length() == 0 ){
+		clipSwitchOn := true
+		ToolTip, Can't set quick slot %place%`nThe clipboard history is empty
+		return
+	}
+
 	if(quickClipFiles[place])
 		FileDelete, %quickClipLogDir%\%place%.*
 	else
@@ -645,6 +651,15 @@ setQuickClip(place){
 	destinationFile := quickClipLogDir . "\" . place . "." . clipType
 	
 	FileCopy, %sourceFile%, %destinationFile%, 1
+
+	changeClip()
+	ControlGetText,tmpTooltipText,,ahk_class tooltips_class32
+	startOfSecondLine := InStr(tmpTooltipText, "`n")+1
+	if( startOfSecondLine == 1 || StrLen(tmpTooltipText) < startOfSecondLine)
+		tmpTooltipText := ""
+	else
+		tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
+	Tooltip Clip saved to quick slot %place%`n%tmpTooltipText%
 
 }
 
@@ -726,5 +741,8 @@ deleteQuickClip(place){
 	if(quickClipFiles[place]){
 		FileDelete, %quickClipLogDir%\%place%.*
 		quickClipFiles[place] := false
+		
+		clipSwitchOn := true
+		ToolTip, Deleted quick slot %place%
 	}
 }
