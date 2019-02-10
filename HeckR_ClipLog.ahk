@@ -60,11 +60,11 @@ SetupClipLab:
 	userClip := true
 	filePathToRead := ""
 
+
 	FileList := ""
 	Loop, Files, %clipLogDir%\*.?log
 	{
 		FileList = %FileList%%A_LoopFileName%:
-		Sort, FileList, D:
 	}
 
 	clipFiles := StrSplit(FileList, ":")
@@ -413,6 +413,7 @@ return
 	Ctrl Up::
 	LWin Up::
 	Alt Up::
+	setStateReady:
 		GDIP_Clean()
 		GDIP_Update()
     	GDIP_EndDraw()
@@ -479,7 +480,7 @@ saveClipb(clipTypeID){
 		clipCursorPos := 0
 
 		prevClipTick := A_TickCount
-		prevClipFile := clipFile
+		prevClipSaveFile := clipFile
 		prevClipType := clipType
 		prevSize := currSize
 
@@ -490,20 +491,22 @@ saveClipb(clipTypeID){
 
 
 
-changeClip(place = ""){
+changeClip(place = "", showPrev = true){
 
 	global
-
-	if(!clipSwitchOn)
-    	GDIP_StartDraw()
-
-	clipSwitchOn := true
 	
+	if(!clipSwitchOn){
+    	GDIP_StartDraw()
+		clipSwitchOn := true
+	}
+
 	if( clipFiles.length() == 0 ){
 		ToolTip, The clipboard history is empty
 		return
 	}
-
+	
+	prevClipFile := clipFiles[clipFiles.length()-clipCursorPos]
+	
 	if( (place == "+") && (clipCursorPos < clipFiles.length()-1) )
 		clipCursorPos++
 	else if( (place == "-" ) && (clipCursorPos > 0) )
@@ -528,7 +531,10 @@ changeClip(place = ""){
 	filePathToRead := clipLogDir . "\" . clipFileName
 	gosub ReadClipFromFile
 	
-	gosub ShowClipPreview
+	if(showPrev)
+		gosub ShowClipPreview
+	else
+		gosub setStateReady
 
 }
 
@@ -553,7 +559,17 @@ ReadClipFromFile:
 	
 	userClip := false
 	
-	FileRead, Clipboard, *c %filePathToRead%
+	try {
+		FileRead, Clipboard, *c %filePathToRead%
+		FileGetSize, tmpSize, %filePathToRead%, K
+		tmpTime := 50 + (tmpSize / 100)
+		sleep tmpTime 
+	} catch e {
+		MsgBox, Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts
+		;DllCall("CloseClipboard")
+		FileDelete, %clipLogDir%\%prevClipFile%
+		Reload
+	}
 
 return
 
