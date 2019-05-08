@@ -433,7 +433,7 @@ getClipFile(index){
 
 hasClipFiles(){
 	global
-	return (clipFiles.count() == 0)
+	return (clipFiles.count() != 0)
 }
 
 ;-------------------------------------------------------
