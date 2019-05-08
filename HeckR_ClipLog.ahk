@@ -50,12 +50,12 @@ SetupClipLab:
 	errorCorruptStr := "Corrupt file"
 	errorImageCopyStr := "Something went wrong while copying the image"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
+	errorNoSuchTypeStr := "The file is of an unkown type"
 
 	userClipRestoreTime := 1000
 
 	clipSwitchOn := false
 	clipCursorPos := 0
-	clipFileName := ""
 	clipType := ""
 	clipSize := 0
 	
@@ -64,7 +64,6 @@ SetupClipLab:
 	prevClipSize := 0
 	
 	scriptIsModifyingClipboard := false
-	filePathToRead := ""
 
 
 	clipFiles := []
@@ -84,6 +83,10 @@ SetupClipLab:
 		quickClipFiles[tmpFileName] := true
 	}
 	
+	if(hasClipFiles()){
+		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
+		clipType := getExtension(getClipFile(clipCursorPos))
+	}
 
 return
 
@@ -436,6 +439,44 @@ hasClipFiles(){
 	return (clipFiles.count() != 0)
 }
 
+setClipCursorPos(index, new := false){
+	global
+	
+	if((index != clipCursorPos || new == true) && index >= 0 && index < clipFiles.count()){
+		clipCursorPos := index
+		clipType := getExtension(getClipFile(clipCursorPos))
+		return true
+	} else{
+		return false
+	}
+}
+
+getExtension(fileName){
+	fileNameArr := StrSplit(fileName, ".")
+	return fileNameArr[fileNameArr.MaxIndex()]
+}
+
+getUniqueFileExtension(extLessFileWithPath){
+	Loop, Files, %extLessFileWithPath%.*
+	{
+		return getExtension(A_LoopFileName)
+	}
+}
+
+readClipFromFile(filePathToRead){
+	global
+	scriptIsModifyingClipboard = true
+	
+	try {
+		FileRead, Clipboard, *c %filePathToRead%
+	} catch e {
+		MsgBox, Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts
+		FileDelete, %clipLogDir%\%prevClipFile%
+		Reload
+	}
+
+}
+
 ;-------------------------------------------------------
 
 waitAfterPaste:
@@ -449,7 +490,7 @@ return
 
 saveClipb(clipTypeID){
 	global
-
+	
 	;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
 	sleep 100
 	
@@ -483,14 +524,14 @@ saveClipb(clipTypeID){
 			if clipData = %prevClipData%
 				differentFromLastData := false
 		}
-
+		
 		if(differentFromLastData == true){
 			clipFile=%clipFile%.%clipType%
 
 			clipFiles.Push(clipFile)
 			FileAppend, %ClipboardAll%, %clipLogDir%\%clipFile%
 		}
-		clipCursorPos := 0
+		setClipCursorPos(0, true)
 
 		prevClipData := clipData
 		prevClipSaveFile := clipFile
@@ -504,8 +545,7 @@ saveClipb(clipTypeID){
 
 
 
-changeClip(place = "", showPrev = true){
-
+changeClip(place = ""){
 	global
 	
 	if(!clipSwitchOn){
@@ -520,88 +560,45 @@ changeClip(place = "", showPrev = true){
 	
 	prevClipFile := getClipFile(clipCursorPos)
 	
-	if( (place == "+") && (clipCursorPos < clipFiles.count() -1) )
-		clipCursorPos++
-	else if( (place == "-" ) && (clipCursorPos > 0) )
-		clipCursorPos--
-	else if place is Integer
+	changed := false
+	
+	if( place == "+" ){
+		changed := setClipCursorPos(clipCursorPos +1, false)
+	} else if( place == "-" ){
+		changed := setClipCursorPos(clipCursorPos -1)
+	} else if place is Integer
 	{
-		if( (place >= 0) && (place < clipFiles.count()) )
-			clipCursorPos := place
-		else{
+		changed := setClipCursorPos(place)
+		if( !changed ){
 			ToolTip, No clipboard data can be found at this index
 			return
 		}
 	}
-	else{
-		gosub SetBasicData
-		gosub ShowClipPreview
-		return
+	
+	if(changed){
+		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
 	}
-	
-	gosub SetBasicData
-	
-	filePathToRead := clipLogDir . "\" . clipFileName
-	gosub ReadClipFromFile
-	
-	if(showPrev)
-		gosub ShowClipPreview
-	else
-		gosub setStateReady
+
+	showClipPreview(clipCursorPos, clipType)
 
 }
 
 
+showClipPreview(tooltipIndex, cType){
+	global
 
-SetBasicData:
-	clipFileName := getClipFile(clipCursorPos)
-	gosub SetClipType
-return
-SetClipType:
-	if(InStr(clipFileName, clipPicExt) > 0)
-		clipType := clipPicExt
-	else if(InStr(clipFileName, clipTextExt) > 0)
-		clipType := clipTextExt
-	else
-		clipType := clipErrorExt
-return
-
-
-
-ReadClipFromFile:
-	
-	scriptIsModifyingClipboard := true
-	
-	try {
-		FileRead, Clipboard, *c %filePathToRead%
-		FileGetSize, tmpSize, %filePathToRead%, K
-		tmpTime := 50 + (tmpSize / 100)
-		sleep tmpTime 
-	} catch e {
-		MsgBox, Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts
-		;DllCall("CloseClipboard")
-		FileDelete, %clipLogDir%\%prevClipFile%
-		Reload
-	}
-
-return
-
-
-
-ShowClipPreview:
-	
 	GDIP_Clean()
 	GDIP_Update()
 
-	if(clipType == clipTextExt){
+	if(cType == clipTextExt){
 		if(StrLen(Clipboard) > 1000)
 			prevStr := SubStr(Clipboard, 1 , 1000)
 		else
 			prevStr := Clipboard
-		ToolTip %clipCursorPos%`n%prevStr%
+		ToolTip %tooltipIndex%`n%prevStr%
 	}
-	else if(clipType == clipPicExt){
-		ToolTip %clipCursorPos%
+	else if(cType == clipPicExt){
+		ToolTip %tooltipIndex%
 
 		clipPicBitmap := Gdip_CreateBitmapFromClipboard()
 		
@@ -630,11 +627,10 @@ ShowClipPreview:
 		GDIP_Update()
 	}
 	else{
-		ToolTip %clipCursorPos%`n%Clipboard%
+		ToolTip %errorNoSuchTypeStr%
 	}
 	
-
-return
+}
 
 instantPaste(place){
 	global
@@ -643,19 +639,12 @@ instantPaste(place){
 		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll
-		clipCursorTmp := clipCursorPos
-		clipCursorPos := place
 		
-		gosub SetBasicData
-		filePathToRead := clipLogDir . "\" . clipFileName
-		
-		gosub ReadClipFromFile
+		readClipFromFile(clipLogDir . "\" . getClipFile(place))
 		Send, ^v
 		gosub waitAfterPaste
 
 		Clipboard := clipSave
-		clipCursorPos := clipCursorTmp
-		gosub SetBasicData
 		
 		gosub waitAfterPaste
 		scriptIsModifyingClipboard := false
@@ -677,9 +666,7 @@ setQuickClip(place){
 	else
 		quickClipFiles[place] := true
 
-	gosub SetBasicData
-
-	sourceFile := clipLogDir . "\" . clipFileName
+	sourceFile := clipLogDir . "\" . getClipFile(clipCursorPos)
 	destinationFile := quickClipLogDir . "\" . place . "." . clipType
 	
 	FileCopy, %sourceFile%, %destinationFile%, 1
@@ -703,33 +690,23 @@ peekQuickClip(place){
 	clipSwitchOn := true
 
 	if(quickClipFiles[place]){
-		
 		scriptIsModifyingClipboard := true
 		
 		clipSave := ClipboardAll
-		clipCursorTmp := clipCursorPos
-		clipCursorPos := place
 
-		if(FileExist(quickClipLogDir . "\" . place . "." . clipPicExt))
-			clipType := clipPicExt
-		else if(FileExist(quickClipLogDir . "\" . place . "." . clipTextExt))
-			clipType := clipTextExt
-		else
-			clipType := clipErrorExt
+		quickClipFile := quickClipLogDir . "\" . place
+		quickClipType := getUniqueFileExtension(quickClipFile)
 
-		filePathToRead := quickClipLogDir . "\" . place . "." . clipType
-		gosub ReadClipFromFile
-		gosub ShowClipPreview
+		readClipFromFile(quickClipLogDir . "\" . place . "." . quickClipType)
+		showClipPreview(place, quickClipType)
 
 		Clipboard := clipSave
-		clipCursorPos := clipCursorTmp
-		gosub SetBasicData
 
 	}
 	else{
 		GDIP_Clean()
 		GDIP_Update()
-		ToolTip, No clipboard data can be found at this index
+		ToolTip, %place%`nNo clipboard data can be found at this index
 	}
 
 }
@@ -741,29 +718,19 @@ pasteQuickClip(place){
 		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll
-		clipCursorTmp := clipCursorPos
-		clipCursorPos := place
 
-		if(FileExist(quickClipLogDir . "\" . place . "." . clipPicExt))
-			clipType := clipPicExt
-		else if(FileExist(quickClipLogDir . "\" . place . "." . clipTextExt))
-			clipType := clipTextExt
-		else
-			clipType := clipErrorExt
+		quickClipFile := quickClipLogDir . "\" . place
+		quickClipType := getUniqueFileExtension(quickClipFile)
 
-		filePathToRead := quickClipLogDir . "\" . place . "." . clipType
-
-		gosub ReadClipFromFile
+		readClipFromFile(quickClipLogDir . "\" . place . "." . quickClipFile)
 		Send, ^v
 		gosub waitAfterPaste
 
 		Clipboard := clipSave
-		clipCursorPos := clipCursorTmp
-		gosub SetBasicData
 		
 		gosub waitAfterPaste
+
 		scriptIsModifyingClipboard := false
-		
 	}
 
 }
