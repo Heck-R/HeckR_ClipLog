@@ -646,7 +646,6 @@ instantPaste(place){
 
 		Clipboard := clipSave
 		
-		gosub waitAfterPaste
 		scriptIsModifyingClipboard := false
 	}
 
@@ -685,9 +684,10 @@ setQuickClip(place){
 peekQuickClip(place){
 	global
 	
-	if(!clipSwitchOn)
+	if(!clipSwitchOn){
 		GDIP_StartDraw()
-	clipSwitchOn := true
+		clipSwitchOn := true
+	}
 
 	if(quickClipFiles[place]){
 		scriptIsModifyingClipboard := true
@@ -727,8 +727,6 @@ pasteQuickClip(place){
 		gosub waitAfterPaste
 
 		Clipboard := clipSave
-		
-		gosub waitAfterPaste
 
 		scriptIsModifyingClipboard := false
 	}
