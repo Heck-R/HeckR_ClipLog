@@ -426,6 +426,18 @@ return
 
 ;-------------------------------------------------------
 
+getClipFile(index){
+	global
+	return clipFiles[clipFiles.count() - index -1]
+}
+
+hasClipFiles(){
+	global
+	return (clipFiles.count() == 0)
+}
+
+;-------------------------------------------------------
+
 waitAfterPaste:
 	tmpClip := ClipboardAll
 	tmpTime := 50 + (StrLen(tmpClip) / 20000)
@@ -467,7 +479,7 @@ saveClipb(clipTypeID){
 		}
 
 		differentFromLastData := true
-		if(clipFiles.count() != 0 clipType == prevClipType && clipSize == prevClipSize ){
+		if(hasClipFiles() && clipType == prevClipType && clipSize == prevClipSize ){
 			if clipData = %prevClipData%
 				differentFromLastData := false
 		}
@@ -501,14 +513,14 @@ changeClip(place = "", showPrev = true){
 		clipSwitchOn := true
 	}
 
-	if( clipFiles.count() == 0 ){
+	if( !hasClipFiles() ){
 		ToolTip, The clipboard history is empty
 		return
 	}
 	
-	prevClipFile := clipFiles[clipFiles.count()-clipCursorPos]
+	prevClipFile := getClipFile(clipCursorPos)
 	
-	if( (place == "+") && (clipCursorPos < clipFiles.count()-1) )
+	if( (place == "+") && (clipCursorPos < clipFiles.count() -1) )
 		clipCursorPos++
 	else if( (place == "-" ) && (clipCursorPos > 0) )
 		clipCursorPos--
@@ -542,7 +554,7 @@ changeClip(place = "", showPrev = true){
 
 
 SetBasicData:
-	clipFileName := clipFiles[clipFiles.count()-clipCursorPos]
+	clipFileName := getClipFile(clipCursorPos)
 	gosub SetClipType
 return
 SetClipType:
@@ -654,7 +666,7 @@ instantPaste(place){
 setQuickClip(place){
 	global
 
-	if( clipFiles.count() == 0 ){
+	if( !hasClipFiles() ){
 		clipSwitchOn := true
 		ToolTip, Can't set quick slot %place%`nThe clipboard history is empty
 		return
