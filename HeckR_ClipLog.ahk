@@ -57,7 +57,7 @@ SetupClipLab:
 	clipCursorPos := 0
 	clipFileName := ""
 	clipType := ""
-	userClip := true
+	scriptIsModifyingClipboard := false
 	filePathToRead := ""
 
 
@@ -412,7 +412,7 @@ return
     	GDIP_EndDraw()
 
 		clipSwitchOn := false
-		userClip := true
+		scriptIsModifyingClipboard := false
 		tooltip
 	return
 
@@ -431,9 +431,12 @@ return
 
 saveClipb(clipTypeID){
 	global
+
+	;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
+	sleep 100
 	
-	if(userClip == true){
-		userClip := false
+	if(scriptIsModifyingClipboard == false){
+		scriptIsModifyingClipboard := true
 		
 		FormatTime, clipFile ,, yyyy-MM-dd_HH-mm-ss
 		clipFile=%clipFile%.%A_MSec%
@@ -477,7 +480,7 @@ saveClipb(clipTypeID){
 		prevClipType := clipType
 		prevSize := currSize
 
-		userClip := true
+		scriptIsModifyingClipboard := false
 	}
 	
 }
@@ -550,7 +553,7 @@ return
 
 ReadClipFromFile:
 	
-	userClip := false
+	scriptIsModifyingClipboard := true
 	
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
@@ -619,8 +622,8 @@ return
 instantPaste(place){
 	global
 	
-	if(userClip && place < clipFiles.length()){
-		userClip := false
+	if(scriptIsModifyingClipboard == false && place >= 0 && place < clipFiles.length()){
+		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll
 		clipCursorTmp := clipCursorPos
@@ -638,7 +641,7 @@ instantPaste(place){
 		gosub SetBasicData
 		
 		gosub waitAfterPaste
-		userClip := true
+		scriptIsModifyingClipboard := false
 	}
 
 }
@@ -684,7 +687,7 @@ peekQuickClip(place){
 
 	if(quickClipFiles[place]){
 		
-		userClip := false
+		scriptIsModifyingClipboard := true
 		
 		clipSave := ClipboardAll
 		clipCursorTmp := clipCursorPos
@@ -717,8 +720,8 @@ peekQuickClip(place){
 pasteQuickClip(place){
 	global
 	
-	if(userClip && quickClipFiles[place]){
-		userClip := false
+	if(scriptIsModifyingClipboard == false && quickClipFiles[place]){
+		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll
 		clipCursorTmp := clipCursorPos
@@ -742,7 +745,7 @@ pasteQuickClip(place){
 		gosub SetBasicData
 		
 		gosub waitAfterPaste
-		userClip := true
+		scriptIsModifyingClipboard := false
 		
 	}
 
