@@ -57,6 +57,12 @@ SetupClipLab:
 	clipCursorPos := 0
 	clipFileName := ""
 	clipType := ""
+	clipSize := 0
+	
+	prevClipData := ""
+	prevClipType := ""
+	prevClipSize := 0
+	
 	scriptIsModifyingClipboard := false
 	filePathToRead := ""
 
@@ -442,10 +448,10 @@ saveClipb(clipTypeID){
 		clipFile=%clipFile%.%A_MSec%
 		clipFileNoExt := clipFile
 		
-		clipTMP := ClipboardAll
-		currSize := StrLen(clipTMP)
+		clipData := ClipboardAll
+		clipSize := StrLen(clipData)
 
-		if( clipTypeID == 2 && StrLen(clipTMP) <= 244 ) {
+		if( clipTypeID == 2 && StrLen(clipData) <= 244 ) {
 			clipType=%clipErrorExt%
 			Clipboard := errorCorruptStr . "`n" . errorImageCopyStr
 		}
@@ -460,25 +466,24 @@ saveClipb(clipTypeID){
 			Clipboard := errorCorruptStr . "`n" . errorTypeStr
 		}
 
-		if( prevClipTick && A_TickCount-prevClipTick < 1000 ){
-			if(clipTypeID == 2 && prevSize == currSize ){
-				return
-			}
-			else if( (prevClipType == clipErrorExt) && (clipType == clipTextExt) && (SubStr(Clipboard, 1, 12) == errorCorruptStr) ){
-				return
-			}
+		differentFromLastData := true
+		if(clipType == prevClipType && clipSize == prevClipSize ){
+			if clipData = %prevClipData%
+				differentFromLastData := false
 		}
-		
-		clipFile=%clipFile%.%clipType%
 
-		clipFiles.Push(clipFile)
-		FileAppend, %ClipboardAll%, %clipLogDir%\%clipFile%
+		if(differentFromLastData == true){
+			clipFile=%clipFile%.%clipType%
+
+			clipFiles.Push(clipFile)
+			FileAppend, %ClipboardAll%, %clipLogDir%\%clipFile%
+		}
 		clipCursorPos := 0
 
-		prevClipTick := A_TickCount
+		prevClipData := clipData
 		prevClipSaveFile := clipFile
 		prevClipType := clipType
-		prevSize := currSize
+		prevClipSize := clipSize
 
 		scriptIsModifyingClipboard := false
 	}
