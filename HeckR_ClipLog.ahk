@@ -61,15 +61,11 @@ SetupClipLab:
 	filePathToRead := ""
 
 
-	FileList := ""
+	clipFiles := []
 	Loop, Files, %clipLogDir%\*.?log
 	{
-		FileList = %FileList%%A_LoopFileName%:
+		clipFiles[A_Index-1] := A_LoopFileName
 	}
-
-	clipFiles := StrSplit(FileList, ":")
-	clipFiles.remove(clipFiles.length())
-	FileList=
 
 
 	quickClipFiles := []
@@ -78,10 +74,7 @@ SetupClipLab:
 	}
 	Loop, Files, %quickClipLogDir%\*.?log
 	{
-		tmpFileName := A_LoopFileName
-		tmpFileName := StrSplit(tmpFileName, ".")
-		tmpFileName := tmpFileName[1]
-		
+		tmpFileName := StrSplit(A_LoopFileName, ".")[1]
 		quickClipFiles[tmpFileName] := true
 	}
 	
