@@ -467,7 +467,7 @@ saveClipb(clipTypeID){
 		}
 
 		differentFromLastData := true
-		if(clipType == prevClipType && clipSize == prevClipSize ){
+		if(clipFiles.count() != 0 clipType == prevClipType && clipSize == prevClipSize ){
 			if clipData = %prevClipData%
 				differentFromLastData := false
 		}
@@ -501,20 +501,20 @@ changeClip(place = "", showPrev = true){
 		clipSwitchOn := true
 	}
 
-	if( clipFiles.length() == 0 ){
+	if( clipFiles.count() == 0 ){
 		ToolTip, The clipboard history is empty
 		return
 	}
 	
-	prevClipFile := clipFiles[clipFiles.length()-clipCursorPos]
+	prevClipFile := clipFiles[clipFiles.count()-clipCursorPos]
 	
-	if( (place == "+") && (clipCursorPos < clipFiles.length()-1) )
+	if( (place == "+") && (clipCursorPos < clipFiles.count()-1) )
 		clipCursorPos++
 	else if( (place == "-" ) && (clipCursorPos > 0) )
 		clipCursorPos--
 	else if place is Integer
 	{
-		if( (place >= 0) && (place < clipFiles.length()) )
+		if( (place >= 0) && (place < clipFiles.count()) )
 			clipCursorPos := place
 		else{
 			ToolTip, No clipboard data can be found at this index
@@ -542,7 +542,7 @@ changeClip(place = "", showPrev = true){
 
 
 SetBasicData:
-	clipFileName := clipFiles[clipFiles.length()-clipCursorPos]
+	clipFileName := clipFiles[clipFiles.count()-clipCursorPos]
 	gosub SetClipType
 return
 SetClipType:
@@ -627,7 +627,7 @@ return
 instantPaste(place){
 	global
 	
-	if(scriptIsModifyingClipboard == false && place >= 0 && place < clipFiles.length()){
+	if(scriptIsModifyingClipboard == false && place >= 0 && place < clipFiles.count()){
 		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll
@@ -654,7 +654,7 @@ instantPaste(place){
 setQuickClip(place){
 	global
 
-	if( clipFiles.length() == 0 ){
+	if( clipFiles.count() == 0 ){
 		clipSwitchOn := true
 		ToolTip, Can't set quick slot %place%`nThe clipboard history is empty
 		return
