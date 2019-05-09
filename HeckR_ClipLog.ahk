@@ -21,13 +21,29 @@ GDIP_SetUp()
 
 ;-------------------------------------------------------
 
-gosub SetupClipLab
+gosub SetupClipLog
 
 ;-------------------------------------------------------
 ;-------------------------------------------------------
 
 
-SetupClipLab:
+SetupClipLog:
+
+	gosub SetupClipLogDirectories
+
+	gosub SetupClipLogFinalValues
+
+	gosub SetupClipLogMessages
+
+	gosub SetupClipLogGlobalVariables
+
+	gosub SetupClipLogFileLists
+
+	gosub SetupClipLogClipboardValue
+
+return
+
+SetupClipLogDirectories:
 
 	mainDir=%A_ScriptDir%\log
 	logDir=%mainDir%\%A_ComputerName%
@@ -42,12 +58,25 @@ SetupClipLab:
 		FileCreateDir %clipLogDir%
 	if !FileExist(quickClipLogDir)
 		FileCreateDir %quickClipLogDir%
+	
+return
+
+SetupClipLogFinalValues:
 
 	clipTextExt := "clog"
 	clipPicExt := "plog"
 	clipErrorExt := "elog"
 
 	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"
+
+	userClipRestoreTime := 1000
+	minWaitAfterPaste := 50
+	divisionalAfterPaste := 20000
+	sleepTimeBeforeSaveClip := 100
+
+return
+
+SetupClipLogMessages:
 
 	errorCorruptStr := "Corrupt file"
 	errorImageCopyStr := "Something went wrong while copying the image"
@@ -60,10 +89,9 @@ SetupClipLab:
 	notifyDelQSlot := "Deleted quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
 
-	userClipRestoreTime := 1000
-	minWaitAfterPaste := 50
-	divisionalAfterPaste := 20000
-	sleepTimeBeforeSaveClip := 100
+return
+
+SetupClipLogGlobalVariables:
 
 	clipSwitchOn := false
 	clipCursorPos := 0
@@ -76,6 +104,9 @@ SetupClipLab:
 	
 	scriptIsModifyingClipboard := false
 
+return
+
+SetupClipLogFileLists:
 
 	clipFiles := []
 	Loop, Files, %clipLogDir%\*.?log
@@ -93,6 +124,10 @@ SetupClipLab:
 		tmpFileName := StrSplit(A_LoopFileName, ".")[1]
 		quickClipFiles[tmpFileName] := true
 	}
+
+return
+
+SetupClipLogClipboardValue:
 	
 	if(hasClipFiles()){
 		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
