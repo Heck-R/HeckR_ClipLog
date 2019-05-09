@@ -47,12 +47,23 @@ SetupClipLab:
 	clipPicExt := "plog"
 	clipErrorExt := "elog"
 
+	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"
+
 	errorCorruptStr := "Corrupt file"
 	errorImageCopyStr := "Something went wrong while copying the image"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 	errorNoSuchTypeStr := "The file is of an unkown type"
+	errorNoClipAtIndex := "No clipboard data can be found at this index"
+	errorNoClipHistory := "The clipboard history is empty"
+	errorCantSetQSlot := "Can't set quick slot"
+
+	notifyDelQSlot := "Deleted quick slot"
+	notifySavedQSlot := "Clip saved to quick slot"
 
 	userClipRestoreTime := 1000
+	minWaitAfterPaste := 50
+	divisionalAfterPaste := 20000
+	sleepTimeBeforeSaveClip := 100
 
 	clipSwitchOn := false
 	clipCursorPos := 0
@@ -481,7 +492,7 @@ readClipFromFile(filePathToRead){
 
 waitAfterPaste:
 	tmpClip := ClipboardAll
-	tmpTime := 50 + (StrLen(tmpClip) / 20000)
+	tmpTime := minWaitAfterPaste + (StrLen(tmpClip) / divisionalAfterPaste)
 	sleep tmpTime
 return
 
@@ -492,23 +503,19 @@ saveClipb(clipTypeID){
 	global
 	
 	;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
-	sleep 100
+	sleep sleepTimeBeforeSaveClip
 	
 	if(scriptIsModifyingClipboard == false){
 		scriptIsModifyingClipboard := true
 		
-		FormatTime, clipFile ,, yyyy-MM-dd_HH-mm-ss
+		FormatTime, clipFile ,, %fileTimeFormat%
 		clipFile=%clipFile%.%A_MSec%
 		clipFileNoExt := clipFile
 		
 		clipData := ClipboardAll
 		clipSize := StrLen(clipData)
 
-		if( clipTypeID == 2 && StrLen(clipData) <= 244 ) {
-			clipType=%clipErrorExt%
-			Clipboard := errorCorruptStr . "`n" . errorImageCopyStr
-		}
-		else if( (clipTypeID == 1) || (clipTypeID == 0) ){
+		if( (clipTypeID == 1) || (clipTypeID == 0) ){
 			clipType=%clipTextExt%
 		}
 		else if(clipTypeID == 2){
@@ -554,7 +561,7 @@ changeClip(place = ""){
 	}
 
 	if( !hasClipFiles() ){
-		ToolTip, The clipboard history is empty
+		ToolTip, %errorNoClipHistory%
 		return
 	}
 	
@@ -570,7 +577,7 @@ changeClip(place = ""){
 	{
 		changed := setClipCursorPos(place)
 		if( !changed ){
-			ToolTip, No clipboard data can be found at this index
+			ToolTip, %errorNoClipAtIndex%
 			return
 		}
 	}
@@ -656,7 +663,7 @@ setQuickClip(place){
 
 	if( !hasClipFiles() ){
 		clipSwitchOn := true
-		ToolTip, Can't set quick slot %place%`nThe clipboard history is empty
+		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
 		return
 	}
 
@@ -677,7 +684,7 @@ setQuickClip(place){
 		tmpTooltipText := ""
 	else
 		tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
-	Tooltip Clip saved to quick slot %place%`n%tmpTooltipText%
+	Tooltip %notifySavedQSlot% %place%`n%tmpTooltipText%
 
 }
 
@@ -697,7 +704,7 @@ peekQuickClip(place){
 		quickClipFile := quickClipLogDir . "\" . place
 		quickClipType := getUniqueFileExtension(quickClipFile)
 
-		readClipFromFile(quickClipLogDir . "\" . place . "." . quickClipType)
+		readClipFromFile(quickClipFile . "." . quickClipType)
 		showClipPreview(place, quickClipType)
 
 		Clipboard := clipSave
@@ -706,7 +713,7 @@ peekQuickClip(place){
 	else{
 		GDIP_Clean()
 		GDIP_Update()
-		ToolTip, %place%`nNo clipboard data can be found at this index
+		ToolTip, %place%`n%errorNoClipAtIndex%
 	}
 
 }
@@ -722,7 +729,7 @@ pasteQuickClip(place){
 		quickClipFile := quickClipLogDir . "\" . place
 		quickClipType := getUniqueFileExtension(quickClipFile)
 
-		readClipFromFile(quickClipLogDir . "\" . place . "." . quickClipFile)
+		readClipFromFile(quickClipFile . "." . quickClipType)
 		Send, ^v
 		gosub waitAfterPaste
 
@@ -741,6 +748,6 @@ deleteQuickClip(place){
 		quickClipFiles[place] := false
 		
 		clipSwitchOn := true
-		ToolTip, Deleted quick slot %place%
+		ToolTip, %notifyDelQSlot% %place%
 	}
 }
