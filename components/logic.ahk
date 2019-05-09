@@ -1,20 +1,12 @@
 
-#if clipSwitchOn
+DeleteTooOldLogFiles:
 
-	Ctrl Up::
-	LWin Up::
-	Alt Up::
-	setStateReady:
-		GDIP_Clean()
-		GDIP_Update()
-    	GDIP_EndDraw()
+    oldLogFileNum := clipFiles.count() - maxClipFileNum
+    loop, %oldLogFileNum% {
+        FileDelete, % clipLogDir . "\" . clipFiles[A_Index-1]
+    }
 
-		clipSwitchOn := false
-		scriptIsModifyingClipboard := false
-		tooltip
-	return
-
-#if
+return
 
 ;-------------------------------------------------------
 
@@ -28,10 +20,15 @@ hasClipFiles(){
 	return (clipFiles.count() != 0)
 }
 
+hasClipFile(index){
+	global
+	return (index >= 0 && index < clipFiles.count() && index < maxClipFileNum)
+}
+
 setClipCursorPos(index, new := false){
 	global
 	
-	if((index != clipCursorPos || new == true) && index >= 0 && index < clipFiles.count()){
+	if((index != clipCursorPos || new == true) && hasClipFile(index)){
 		clipCursorPos := index
 		clipType := getExtension(getClipFile(clipCursorPos))
 		return true
@@ -59,7 +56,7 @@ readClipFromFile(filePathToRead){
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
-		MsgBox, Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts
+		MsgBox, %errorCantReadClipFile%
 		FileDelete, %clipLogDir%\%prevClipFile%
 		Reload
 	}
@@ -122,6 +119,8 @@ saveClipb(clipTypeID){
 		prevClipSaveFile := clipFile
 		prevClipType := clipType
 		prevClipSize := clipSize
+
+        gosub DeleteTooOldLogFiles
 
 		scriptIsModifyingClipboard := false
 	}
@@ -220,7 +219,7 @@ showClipPreview(tooltipIndex, cType){
 instantPaste(place){
 	global
 	
-	if(scriptIsModifyingClipboard == false && place >= 0 && place < clipFiles.count()){
+	if(scriptIsModifyingClipboard == false && hasClipFile(place)){
 		scriptIsModifyingClipboard := true
 
 		clipSave := ClipboardAll

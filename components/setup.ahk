@@ -1,6 +1,9 @@
 
 gosub SetupClipLog
 
+return
+
+;------------------------------------------------
 ;------------------------------------------------
 
 SetupClipLog:
@@ -20,13 +23,26 @@ SetupClipLog:
 return
 
 ;------------------------------------------------
+;------------------------------------------------
 
 SetupClipLogDirectories:
+
+    gosub SetupClipLogDirectoriesPaths
+
+    gosub SetupClipLogDirectoriesCreateMissingOnes
+	
+return
+
+SetupClipLogDirectoriesPaths:
 
 	mainDir=%A_ScriptDir%\log
 	logDir=%mainDir%\%A_ComputerName%
 	clipLogDir=%logDir%\clipLogDir
 	quickClipLogDir=%logDir%\quickClipLogDir
+
+return
+
+SetupClipLogDirectoriesCreateMissingOnes:
 
 	if !FileExist(mainDir)
 		FileCreateDir %mainDir%
@@ -36,8 +52,10 @@ SetupClipLogDirectories:
 		FileCreateDir %clipLogDir%
 	if !FileExist(quickClipLogDir)
 		FileCreateDir %quickClipLogDir%
-	
+
 return
+
+;------------------------------------------------
 
 SetupClipLogFinalValues:
 
@@ -47,12 +65,14 @@ SetupClipLogFinalValues:
 
 	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"
 
-	userClipRestoreTime := 1000
 	minWaitAfterPaste := 50
-	divisionalAfterPaste := 20000
 	sleepTimeBeforeSaveClip := 100
+	divisionalAfterPaste := 20000
+    maxClipFileNum := 1000
 
 return
+
+;------------------------------------------------
 
 SetupClipLogMessages:
 
@@ -60,6 +80,7 @@ SetupClipLogMessages:
 	errorImageCopyStr := "Something went wrong while copying the image"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 	errorNoSuchTypeStr := "The file is of an unkown type"
+    errorCantReadClipFile := "Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts"
 	errorNoClipAtIndex := "No clipboard data can be found at this index"
 	errorNoClipHistory := "The clipboard history is empty"
 	errorCantSetQSlot := "Can't set quick slot"
@@ -68,6 +89,8 @@ SetupClipLogMessages:
 	notifySavedQSlot := "Clip saved to quick slot"
 
 return
+
+;------------------------------------------------
 
 SetupClipLogGlobalVariables:
 
@@ -83,6 +106,8 @@ SetupClipLogGlobalVariables:
 	scriptIsModifyingClipboard := false
 
 return
+
+;------------------------------------------------
 
 SetupClipLogFileLists:
 
@@ -105,12 +130,16 @@ SetupClipLogFileLists:
 
 return
 
+;------------------------------------------------
+
 SetupClipLogInit:
 	
 	if(hasClipFiles()){
 		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
 		clipType := getExtension(getClipFile(clipCursorPos))
 	}
+
+    gosub DeleteTooOldLogFiles
 
 	GDIP_SetUp()
 

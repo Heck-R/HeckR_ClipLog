@@ -1,4 +1,23 @@
 
+#if clipSwitchOn
+
+	Ctrl Up::
+	LWin Up::
+	Alt Up::
+	setStateReady:
+		GDIP_Clean()
+		GDIP_Update()
+    	GDIP_EndDraw()
+
+		clipSwitchOn := false
+		scriptIsModifyingClipboard := false
+		tooltip
+	return
+
+#if
+
+;-------------------------------------------------------
+
 #Left::changeClip("+")
 #Right::changeClip("-")
 #Up::changeClip()
