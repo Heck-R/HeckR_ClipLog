@@ -35,10 +35,10 @@ return
 
 SetupClipLogDirectoriesPaths:
 
-	mainDir=%A_ScriptDir%\log
-	logDir=%mainDir%\%A_ComputerName%
-	clipLogDir=%logDir%\clipLogDir
-	quickClipLogDir=%logDir%\quickClipLogDir
+	mainDir=%A_ScriptDir%\log\
+	logDir=%mainDir%%A_ComputerName%\
+	clipLogDir=%logDir%clipLogDir\
+	quickClipLogDir=%logDir%quickClipLogDir\
 
 return
 
@@ -80,7 +80,7 @@ SetupClipLogMessages:
 	errorImageCopyStr := "Something went wrong while copying the image"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 	errorNoSuchTypeStr := "The file is of an unkown type"
-    errorCantReadClipFile := "Can't read the file for some reason\nIn order to avoid further problems the file gets deleted and the script restarts"
+    errorCantReadClipFile := "Can't read the file for some reason`nIn order to avoid further problems the file gets deleted and the script restarts"
 	errorNoClipAtIndex := "No clipboard data can be found at this index"
 	errorNoClipHistory := "The clipboard history is empty"
 	errorCantSetQSlot := "Can't set quick slot"
@@ -112,7 +112,7 @@ return
 SetupClipLogFileLists:
 
 	clipFiles := []
-	Loop, Files, %clipLogDir%\*.?log
+	Loop, Files, %clipLogDir%*.?log
 	{
 		clipFiles[A_Index-1] := A_LoopFileName
 	}
@@ -122,7 +122,7 @@ SetupClipLogFileLists:
 	Loop, 10 {
 		quickClipFiles[A_Index] := false
 	}
-	Loop, Files, %quickClipLogDir%\*.?log
+	Loop, Files, %quickClipLogDir%*.?log
 	{
 		tmpFileName := StrSplit(A_LoopFileName, ".")[1]
 		quickClipFiles[tmpFileName] := true
@@ -135,7 +135,7 @@ return
 SetupClipLogInit:
 	
 	if(hasClipFiles()){
-		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
+		readClipFromFile(clipLogDir . getClipFile(clipCursorPos))
 		clipType := getExtension(getClipFile(clipCursorPos))
 	}
 

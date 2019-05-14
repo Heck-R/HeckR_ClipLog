@@ -3,7 +3,7 @@ DeleteTooOldLogFiles:
 
     oldLogFileNum := clipFiles.count() - maxClipFileNum
     loop, %oldLogFileNum% {
-        FileDelete, % clipLogDir . "\" . clipFiles[A_Index-1]
+        FileDelete, % clipLogDir . clipFiles[A_Index-1]
     }
 
 return
@@ -56,8 +56,8 @@ readClipFromFile(filePathToRead){
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
-		MsgBox, %errorCantReadClipFile%
-		FileDelete, %clipLogDir%\%prevClipFile%
+		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
+		FileDelete, %clipLogDir%%prevClipFile%
 		Reload
 	}
 
@@ -111,7 +111,7 @@ saveClipb(clipTypeID){
 			clipFile=%clipFile%.%clipType%
 
 			clipFiles.Push(clipFile)
-			FileAppend, %ClipboardAll%, %clipLogDir%\%clipFile%
+			FileAppend, %ClipboardAll%, %clipLogDir%%clipFile%
 		}
 		setClipCursorPos(0, true)
 
@@ -160,7 +160,7 @@ changeClip(place = ""){
 	}
 	
 	if(changed){
-		readClipFromFile(clipLogDir . "\" . getClipFile(clipCursorPos))
+		readClipFromFile(clipLogDir . getClipFile(clipCursorPos))
 	}
 
 	showClipPreview(clipCursorPos, clipType)
@@ -224,7 +224,7 @@ instantPaste(place){
 
 		clipSave := ClipboardAll
 		
-		readClipFromFile(clipLogDir . "\" . getClipFile(place))
+		readClipFromFile(clipLogDir . getClipFile(place))
 		Send, ^v
 		gosub waitAfterPaste
 
@@ -245,12 +245,12 @@ setQuickClip(place){
 	}
 
 	if(quickClipFiles[place])
-		FileDelete, %quickClipLogDir%\%place%.*
+		FileDelete, %quickClipLogDir%%place%.*
 	else
 		quickClipFiles[place] := true
 
-	sourceFile := clipLogDir . "\" . getClipFile(clipCursorPos)
-	destinationFile := quickClipLogDir . "\" . place . "." . clipType
+	sourceFile := clipLogDir . getClipFile(clipCursorPos)
+	destinationFile := quickClipLogDir . place . "." . clipType
 	
 	FileCopy, %sourceFile%, %destinationFile%, 1
 
@@ -278,7 +278,7 @@ peekQuickClip(place){
 		
 		clipSave := ClipboardAll
 
-		quickClipFile := quickClipLogDir . "\" . place
+		quickClipFile := quickClipLogDir . place
 		quickClipType := getUniqueFileExtension(quickClipFile)
 
 		readClipFromFile(quickClipFile . "." . quickClipType)
@@ -303,7 +303,7 @@ pasteQuickClip(place){
 
 		clipSave := ClipboardAll
 
-		quickClipFile := quickClipLogDir . "\" . place
+		quickClipFile := quickClipLogDir . place
 		quickClipType := getUniqueFileExtension(quickClipFile)
 
 		readClipFromFile(quickClipFile . "." . quickClipType)
@@ -321,7 +321,7 @@ deleteQuickClip(place){
 	global
 
 	if(quickClipFiles[place]){
-		FileDelete, %quickClipLogDir%\%place%.*
+		FileDelete, %quickClipLogDir%%place%.*
 		quickClipFiles[place] := false
 		
 		clipSwitchOn := true
