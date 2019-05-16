@@ -99,6 +99,7 @@ SetupClipLogGlobalVariables:
 	clipType := ""
 	clipSize := 0
 	
+	prevClipFile := ""
 	prevClipData := ""
 	prevClipType := ""
 	prevClipSize := 0
@@ -133,11 +134,6 @@ return
 ;------------------------------------------------
 
 SetupClipLogInit:
-	
-	if(hasClipFiles()){
-		readClipFromFile(clipLogDir . getClipFile(clipCursorPos))
-		clipType := getExtension(getClipFile(clipCursorPos))
-	}
 
     gosub DeleteTooOldLogFiles
 

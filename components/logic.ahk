@@ -57,7 +57,7 @@ readClipFromFile(filePathToRead){
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
 		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
-		FileDelete, %clipLogDir%%prevClipFile%
+		FileDelete, %clipLogDir%%filePathToRead%
 		Reload
 	}
 
