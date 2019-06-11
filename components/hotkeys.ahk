@@ -18,10 +18,23 @@
 
 ;-------------------------------------------------------
 
-#Left::changeClip("+")
-#Right::changeClip("-")
-#Up::changeClip()
-#Down::changeClip()
+#Left::
+#WheelDown::
+#XButton1::
+	changeClip("+")
+return
+
+#Right::
+#WheelUp::
+#XButton2::
+	changeClip("-")
+return
+
+#Up::
+#Down::
+#MButton::
+	changeClip()
+return
 
 ;------------------------------------------------
 
