@@ -19,12 +19,14 @@
 ;-------------------------------------------------------
 
 #Left::
+#LButton::
 #WheelDown::
 #XButton1::
 	changeClip("+")
 return
 
 #Right::
+#RButton::
 #WheelUp::
 #XButton2::
 	changeClip("-")
