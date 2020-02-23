@@ -229,8 +229,6 @@ instantPaste(place){
 		gosub waitAfterPaste
 
 		Clipboard := clipSave
-		
-		scriptIsModifyingClipboard := false
 	}
 
 }
@@ -285,7 +283,6 @@ peekQuickClip(place){
 		showClipPreview(place, quickClipType)
 
 		Clipboard := clipSave
-
 	}
 	else{
 		GDIP_Clean()
@@ -311,8 +308,6 @@ pasteQuickClip(place){
 		gosub waitAfterPaste
 
 		Clipboard := clipSave
-
-		scriptIsModifyingClipboard := false
 	}
 
 }
