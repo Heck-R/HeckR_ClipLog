@@ -154,7 +154,8 @@ changeClip(place = ""){
 	{
 		changed := setClipCursorPos(place)
 		if( !changed ){
-			ToolTip, %errorNoClipAtIndex%
+			if(place != clipCursorPos)
+				ToolTip, %errorNoClipAtIndex%
 			return
 		}
 	}
