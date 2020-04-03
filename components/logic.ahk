@@ -153,9 +153,8 @@ changeClip(place = ""){
 	} else if place is Integer
 	{
 		changed := setClipCursorPos(place)
-		if( !changed ){
-			if(place != clipCursorPos)
-				ToolTip, %errorNoClipAtIndex%
+		if( !changed && place != clipCursorPos){
+			ToolTip, %errorNoClipAtIndex%
 			return
 		}
 	}
