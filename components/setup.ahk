@@ -63,11 +63,17 @@ SetupClipLogFinalValues:
 	clipPicExt := "plog"
 	clipErrorExt := "elog"
 
+	clipModeNone := "none"
+	clipModePreview := "preview"
+	clipModePaste := "paste"
+	clipModeAdd := "add"
+	clipModeDelete := "delete"
+
 	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"
 
-	minWaitAfterPaste := 50
+	minwaitForClipboard := 50
 	sleepTimeBeforeSaveClip := 100
-	divisionalAfterPaste := 20000
+	divisionalForClipboardWait := 20000
     maxClipFileNum := 1000
 
 return
@@ -94,7 +100,7 @@ return
 
 SetupClipLogGlobalVariables:
 
-	clipSwitchOn := false
+	clipMode := clipModeNone
 	clipCursorPos := 0
 	clipType := ""
 	clipSize := 0

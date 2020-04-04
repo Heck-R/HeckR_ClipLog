@@ -65,11 +65,14 @@ readClipFromFile(filePathToRead){
 
 ;-------------------------------------------------------
 
-waitAfterPaste:
-	tmpClip := ClipboardAll
-	tmpTime := minWaitAfterPaste + (StrLen(tmpClip) / divisionalAfterPaste)
+waitForClipboard(dataToWaitFor = false){
+	global
+
+	if(dataToWaitFor == false)
+		dataToWaitFor = ClipboardAll
+	tmpTime := minwaitForClipboard + (StrLen(dataToWaitFor) / divisionalForClipboardWait)
 	sleep tmpTime
-return
+}
 
 ;-------------------------------------------------------
 ;-------------------------------------------------------
@@ -132,10 +135,7 @@ saveClipb(clipTypeID){
 changeClip(place = ""){
 	global
 	
-	if(!clipSwitchOn){
-    	GDIP_StartDraw()
-		clipSwitchOn := true
-	}
+    GDIP_StartDraw()
 
 	if( !hasClipFiles() ){
 		ToolTip, %errorNoClipHistory%
@@ -226,9 +226,11 @@ instantPaste(place){
 		
 		readClipFromFile(clipLogDir . getClipFile(place))
 		Send, ^v
-		gosub waitAfterPaste
+		waitForClipboard()
 
 		Clipboard := clipSave
+		waitForClipboard(clipSave)
+		gosub setStateReady
 	}
 
 }
@@ -237,7 +239,6 @@ setQuickClip(place){
 	global
 
 	if( !hasClipFiles() ){
-		clipSwitchOn := true
 		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
 		return
 	}
@@ -266,10 +267,7 @@ setQuickClip(place){
 peekQuickClip(place){
 	global
 	
-	if(!clipSwitchOn){
-		GDIP_StartDraw()
-		clipSwitchOn := true
-	}
+	GDIP_StartDraw()
 
 	if(quickClipFiles[place]){
 		scriptIsModifyingClipboard := true
@@ -305,10 +303,13 @@ pasteQuickClip(place){
 
 		readClipFromFile(quickClipFile . "." . quickClipType)
 		Send, ^v
-		gosub waitAfterPaste
+		waitForClipboard()
 
 		Clipboard := clipSave
+		waitForClipboard(clipSave)
 	}
+	
+	gosub setStateReady
 
 }
 
@@ -319,7 +320,6 @@ deleteQuickClip(place){
 		FileDelete, %quickClipLogDir%%place%.*
 		quickClipFiles[place] := false
 		
-		clipSwitchOn := true
 		ToolTip, %notifyDelQSlot% %place%
 	}
 }

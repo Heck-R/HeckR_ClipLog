@@ -1,16 +1,19 @@
 
-#if clipSwitchOn
+#if (clipMode != clipModeNone) and (clipMode != clipModePaste)
 
+	Shift Up::
 	Ctrl Up::
-	LWin Up::
 	Alt Up::
+	LWin Up::
 	setStateReady:
-		GDIP_Clean()
-		GDIP_Update()
-    	GDIP_EndDraw()
+		if(GDIP_IsDrawing){
+			GDIP_Clean()
+			GDIP_Update()
+			GDIP_EndDraw()
+		}
 
-		clipSwitchOn := false
 		scriptIsModifyingClipboard := false
+		clipMode := clipModeNone
 		tooltip
 	return
 
@@ -19,10 +22,13 @@
 ;--------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------
 
+#if (clipMode == clipModeNone) or (clipMode == clipModePreview)
+
 #Left::
 #LButton::
 #WheelDown::
 #XButton1::
+	clipMode := clipModePreview
 	changeClip("+")
 return
 
@@ -30,16 +36,16 @@ return
 #RButton::
 #WheelUp::
 #XButton2::
+	clipMode := clipModePreview
 	changeClip("-")
 return
 
 #Up::
 #Down::
 #MButton::
+	clipMode := clipModePreview
 	changeClip()
 return
-
-;------------------------------------------------
 
 #0::
 #1::
@@ -61,10 +67,15 @@ return
 #Numpad7::
 #Numpad8::
 #Numpad9::
+	clipMode := clipModePreview
 	changeClip(substr(A_ThisHotkey, 0))
 return
 
+#if
+
 ;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModePaste)
 
 #!0::
 #!1::
@@ -86,63 +97,82 @@ return
 #!Numpad7::
 #!Numpad8::
 #!Numpad9::
+	clipMode := clipModePaste
 	instantPaste(substr(A_ThisHotkey, 0))
 return
 
+#if
+
 ;------------------------------------------------
 ;------------------------------------------------
 
+#if (clipMode == clipModeNone) or (clipMode == clipModeAdd)
+
 +^#0::
 ^#NumpadIns::
+	clipMode := clipModeAdd
 	setQuickClip(0)
 return
 
 +^#1::
 ^#NumpadEnd::
+	clipMode := clipModeAdd
 	setQuickClip(1)
 return
 
 +^#2::
 ^#NumpadDown::
+	clipMode := clipModeAdd
 	setQuickClip(2)
 return
 
 +^#3::
 ^#NumpadPgdn::
+	clipMode := clipModeAdd
 	setQuickClip(3)
 return
 
 +^#4::
 ^#NumpadLeft::
+	clipMode := clipModeAdd
 	setQuickClip(4)
 return
 
 +^#5::
 ^#NumpadClear::
+	clipMode := clipModeAdd
 	setQuickClip(5)
 return
 
 +^#6::
 ^#NumpadRight::
+	clipMode := clipModeAdd
 	setQuickClip(6)
 return
 
 +^#7::
 ^#NumpadHome::
+	clipMode := clipModeAdd
 	setQuickClip(7)
 return
 
 +^#8::
 ^#NumpadUp::
+	clipMode := clipModeAdd
 	setQuickClip(8)
 return
 
 +^#9::
 ^#NumpadPgup::
+	clipMode := clipModeAdd
 	setQuickClip(9)
 return
 
+#if
+
 ;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModePreview)
 
 ^#0::
 ^#1::
@@ -164,10 +194,15 @@ return
 ^#Numpad7::
 ^#Numpad8::
 ^#Numpad9::
+	clipMode := clipModePreview
 	peekQuickClip(substr(A_ThisHotkey, 0))
 return
 
+#if
+
 ;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModePaste)
 
 ^#!0::
 ^#!1::
@@ -189,57 +224,74 @@ return
 ^#!Numpad7::
 ^#!Numpad8::
 ^#!Numpad9::
+	clipMode := clipModePaste
 	pasteQuickClip(substr(A_ThisHotkey, 0))
 return
 
+#if
+
 ;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModeDelete)
 
 +^#!0::
 ^#!NumpadIns::
+	clipMode := clipModeDelete
 	deleteQuickClip(0)
 return
 
 +^#!1::
 ^#!NumpadEnd::
+	clipMode := clipModeDelete
 	deleteQuickClip(1)
 return
 
 +^#!2::
 ^#!NumpadDown::
+	clipMode := clipModeDelete
 	deleteQuickClip(2)
 return
 
 +^#!3::
 ^#!NumpadPgdn::
+	clipMode := clipModeDelete
 	deleteQuickClip(3)
 return
 
 +^#!4::
 ^#!NumpadLeft::
+	clipMode := clipModeDelete
 	deleteQuickClip(4)
 return
 
 +^#!5::
 ^#!NumpadClear::
+	clipMode := clipModeDelete
 	deleteQuickClip(5)
 return
 
 +^#!6::
 ^#!NumpadRight::
+	clipMode := clipModeDelete
 	deleteQuickClip(6)
 return
 
 +^#!7::
 ^#!NumpadHome::
+	clipMode := clipModeDelete
 	deleteQuickClip(7)
 return
 
 +^#!8::
 ^#!NumpadUp::
+	clipMode := clipModeDelete
 	deleteQuickClip(8)
 return
 
 +^#!9::
 ^#!NumpadPgup::
+	clipMode := clipModeDelete
 	deleteQuickClip(9)
 return
+
+#if
