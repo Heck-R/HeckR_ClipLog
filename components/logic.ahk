@@ -7,6 +7,15 @@ deleteOldLogFiles(){
         FileDelete, % clipLogDir . clipFiles[A_Index]
     }
 
+	if(oldLogFileNum > 0){
+		newClipFiles := []
+		loop, %maxClipFileNum% {
+			newClipFiles.Push(clipFiles[A_Index + oldLogFileNum])
+		}
+		clipFiles := newClipFiles
+		newClipFiles := []
+	}
+
 }
 
 ;-------------------------------------------------------
