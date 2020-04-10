@@ -25,6 +25,11 @@ getClipFileName(place){
 	return clipFiles[clipFiles.count() - place]
 }
 
+getClipFilePath(place){
+	global
+	return clipLogDir . getClipFileName(place)
+}
+
 hasClipFiles(){
 	global
 	return (clipFiles.count() != 0)
@@ -170,7 +175,7 @@ changeClip(place = ""){
 	}
 	
 	if(changed){
-		readClipFromFile(clipLogDir . getClipFileName(clipCursorPos))
+		readClipFromFile(getClipFilePath(clipCursorPos))
 	}
 
 	showClipPreview(clipCursorPos, clipType)
@@ -259,7 +264,7 @@ setQuickClip(place){
 	else
 		quickClipFiles[place] := true
 
-	sourceFile := clipLogDir . getClipFileName(clipCursorPos)
+	sourceFile := getClipFilePath(clipCursorPos)
 	destinationFile := quickClipLogDir . place . "." . clipType
 	
 	FileCopy, %sourceFile%, %destinationFile%, 1
