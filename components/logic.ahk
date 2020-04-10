@@ -4,7 +4,7 @@ deleteOldLogFiles(){
 
     oldLogFileNum := clipFiles.count() - maxClipFileNum
     loop, %oldLogFileNum% {
-        FileDelete, % clipLogDir . clipFiles[A_Index-1]
+        FileDelete, % clipLogDir . clipFiles[A_Index]
     }
 
 }
@@ -13,7 +13,7 @@ deleteOldLogFiles(){
 
 getClipFile(index){
 	global
-	return clipFiles[clipFiles.count() - index -1]
+	return clipFiles[clipFiles.count() - index]
 }
 
 hasClipFiles(){

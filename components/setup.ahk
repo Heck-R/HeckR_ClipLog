@@ -121,7 +121,7 @@ SetupClipLogFileLists:
 	clipFiles := []
 	Loop, Files, %clipLogDir%*.?log
 	{
-		clipFiles[A_Index-1] := A_LoopFileName
+		clipFiles.Push(A_LoopFileName)
 	}
 
 
