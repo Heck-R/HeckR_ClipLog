@@ -141,7 +141,7 @@ return
 
 SetupClipLogInit:
 
-    gosub DeleteTooOldLogFiles
+    deleteOldLogFiles()
 
 	GDIP_SetUp()
 

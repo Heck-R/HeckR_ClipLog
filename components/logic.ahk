@@ -1,12 +1,13 @@
 
-DeleteTooOldLogFiles:
+deleteOldLogFiles(){
+	global
 
     oldLogFileNum := clipFiles.count() - maxClipFileNum
     loop, %oldLogFileNum% {
         FileDelete, % clipLogDir . clipFiles[A_Index-1]
     }
 
-return
+}
 
 ;-------------------------------------------------------
 
@@ -123,7 +124,7 @@ saveClipb(clipTypeID){
 		prevClipType := clipType
 		prevClipSize := clipSize
 
-        gosub DeleteTooOldLogFiles
+        deleteOldLogFiles()
 
 		scriptIsModifyingClipboard := false
 	}
