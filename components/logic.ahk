@@ -20,9 +20,9 @@ deleteOldLogFiles(){
 
 ;-------------------------------------------------------
 
-getClipFile(index){
+getClipFileName(place){
 	global
-	return clipFiles[clipFiles.count() - index]
+	return clipFiles[clipFiles.count() - place]
 }
 
 hasClipFiles(){
@@ -40,7 +40,7 @@ setClipCursorPos(index, new := false){
 	
 	if((index != clipCursorPos || new == true) && hasClipFile(index)){
 		clipCursorPos := index
-		clipType := getExtension(getClipFile(clipCursorPos))
+		clipType := getExtension(getClipFileName(clipCursorPos))
 		return true
 	} else{
 		return false
@@ -152,7 +152,7 @@ changeClip(place = ""){
 		return
 	}
 	
-	prevClipFile := getClipFile(clipCursorPos)
+	prevClipFile := getClipFileName(clipCursorPos)
 	
 	changed := false
 	
@@ -170,7 +170,7 @@ changeClip(place = ""){
 	}
 	
 	if(changed){
-		readClipFromFile(clipLogDir . getClipFile(clipCursorPos))
+		readClipFromFile(clipLogDir . getClipFileName(clipCursorPos))
 	}
 
 	showClipPreview(clipCursorPos, clipType)
@@ -233,7 +233,7 @@ instantPaste(place){
 
 		clipSave := ClipboardAll
 		
-		readClipFromFile(clipLogDir . getClipFile(place))
+		readClipFromFile(clipLogDir . getClipFileName(place))
 		Send, ^v
 		waitForClipboard()
 
@@ -259,7 +259,7 @@ setQuickClip(place){
 	else
 		quickClipFiles[place] := true
 
-	sourceFile := clipLogDir . getClipFile(clipCursorPos)
+	sourceFile := clipLogDir . getClipFileName(clipCursorPos)
 	destinationFile := quickClipLogDir . place . "." . clipType
 	
 	FileCopy, %sourceFile%, %destinationFile%, 1

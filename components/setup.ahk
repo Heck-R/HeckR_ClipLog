@@ -82,14 +82,14 @@ return
 
 SetupClipLogMessages:
 
+    errorCantReadClipFile := "Can't read the file for some reason`nIn order to avoid further problems the file gets deleted and the script restarts"
+	errorCantSetQSlot := "Can't set quick slot"
 	errorCorruptStr := "Corrupt file"
 	errorImageCopyStr := "Something went wrong while copying the image"
-	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
-	errorNoSuchTypeStr := "The file is of an unkown type"
-    errorCantReadClipFile := "Can't read the file for some reason`nIn order to avoid further problems the file gets deleted and the script restarts"
 	errorNoClipAtIndex := "No clipboard data can be found at this index"
 	errorNoClipHistory := "The clipboard history is empty"
-	errorCantSetQSlot := "Can't set quick slot"
+	errorNoSuchTypeStr := "The file is of an unkown type"
+	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 
 	notifyDelQSlot := "Deleted quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
