@@ -88,15 +88,15 @@ getUniqueFileExtension(extLessFileWithPath){
 
 readClipFromFile(filePathToRead){
 	global
-	scriptIsModifyingClipboard = true
 	
+	scriptIsModifyingClipboard = true
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
 		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
-		FileDelete, %clipLogDir%%filePathToRead%
 		Reload
 	}
+	scriptIsModifyingClipboard = false
 
 }
 
@@ -106,7 +106,7 @@ waitForClipboard(dataToWaitFor = false){
 	global
 
 	if(dataToWaitFor == false)
-		dataToWaitFor = ClipboardAll
+		dataToWaitFor := ClipboardAll
 	tmpTime := minwaitForClipboard + (StrLen(dataToWaitFor) / divisionalForClipboardWait)
 	sleep tmpTime
 }
@@ -117,11 +117,11 @@ waitForClipboard(dataToWaitFor = false){
 saveClipb(clipTypeID){
 	global
 	
-	;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
-	sleep sleepTimeBeforeSaveClip
-	
 	if(scriptIsModifyingClipboard == false){
 		scriptIsModifyingClipboard := true
+
+		;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
+		sleep sleepTimeBeforeSaveClip
 		
 		FormatTime, clipFile ,, %fileTimeFormat%
 		clipFile=%clipFile%.%A_MSec%
@@ -172,6 +172,12 @@ saveClipb(clipTypeID){
 changeClip(place = "", force = false, showPreview = true){
 	global
 	
+	if(changeClipRunning){
+		return
+	}
+	changeClipRunning := true
+
+
     GDIP_StartDraw()
 
 	if( !hasClipFiles() ){
@@ -202,10 +208,18 @@ changeClip(place = "", force = false, showPreview = true){
 		showClipPreview(clipCursorPos, clipType)
 	}
 
+
+	changeClipRunning := false
 }
 
 showClipPreview(tooltipIndex, cType){
 	global
+	
+	if(showClipPreviewRunning){
+		return
+	}
+	showClipPreviewRunning := true
+
 
 	GDIP_Clean()
 	GDIP_Update()
@@ -249,41 +263,57 @@ showClipPreview(tooltipIndex, cType){
 	else{
 		ToolTip %errorNoSuchTypeStr%
 	}
+
 	
+	showClipPreviewRunning := false
 }
 
 instantPaste(place){
 	global
 	
-	if(scriptIsModifyingClipboard == false && hasClipFile(place)){
-		scriptIsModifyingClipboard := true
+	if(instantPasteRunning){
+		return
+	}
+	instantPasteRunning := true
+	
 
+	if(hasClipFile(place)){
 		clipSave := ClipboardAll
 		
 		readClipFromFile(clipLogDir . getClipFileName(place))
 		Send, ^v
 		waitForClipboard()
 
+		scriptIsModifyingClipboard := true
 		Clipboard := clipSave
 		waitForClipboard(clipSave)
+		scriptIsModifyingClipboard := false
+
 		gosub setStateReady
 	}
 
+
+	instantPasteRunning := false
 }
 
 deleteClip(place = "", maintainCursorPos = true){
 	global
 	
-	placeToDelete := calcPlace(place)
-	if(scriptIsModifyingClipboard == false && hasClipFile(placeToDelete)){
-		scriptIsModifyingClipboard := true
+	if(deleteClipRunning){
+		return
+	}
+	deleteClipRunning := true
 
-		FileDelete % getClipFilePath(placeToDelete)
-		deleteClipFileName(placeToDelete)
-	} else{
+	
+	placeToDelete := calcPlace(place)
+	if(!hasClipFile(placeToDelete)){
 		ToolTip, %errorNoClipAtIndex%
 		return
 	}
+
+
+	FileDelete % getClipFilePath(placeToDelete)
+	deleteClipFileName(placeToDelete)
 
 	deletedClipText := "Deleted clip: " . placeToDelete
 	
@@ -301,7 +331,11 @@ deleteClip(place = "", maintainCursorPos = true){
 		if(hasClipFile(placeToMove)){
 			changeClip(placeToMove, true, false)
 		} else{
+			scriptIsModifyingClipboard := true
 			Clipboard := ""
+			waitForClipboard("")
+			scriptIsModifyingClipboard := false
+
 			Tooltip % deletedClipText . "`nNo clip is left to change to"
 			return
 		}
@@ -309,14 +343,22 @@ deleteClip(place = "", maintainCursorPos = true){
 	
 	Tooltip % deletedClipText . "`nCurrent clip: " . clipCursorPos . "`nNumber of clips remaining: " . clipFiles.Count()
 
+
+	deleteClipRunning := false
 }
 
 ;--------------------------------------------------------------------------------------------------
 
 setQuickClip(place){
 	global
+	
+	if(setQuickClipRunning){
+		return
+	}
+	setQuickClipRunning := true
 
-	if( !hasClipFiles() ){
+
+	if(!hasClipFiles()){
 		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
 		return
 	}
@@ -340,16 +382,22 @@ setQuickClip(place){
 		tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
 	Tooltip %notifySavedQSlot% %place%`n%tmpTooltipText%
 
+
+	setQuickClipRunning := false
 }
 
 peekQuickClip(place){
 	global
 	
+	if(peekQuickClipRunning){
+		return
+	}
+	peekQuickClipRunning := true
+
+	
 	GDIP_StartDraw()
 
 	if(quickClipFiles[place]){
-		scriptIsModifyingClipboard := true
-		
 		clipSave := ClipboardAll
 
 		quickClipFile := quickClipLogDir . place
@@ -358,7 +406,10 @@ peekQuickClip(place){
 		readClipFromFile(quickClipFile . "." . quickClipType)
 		showClipPreview(place, quickClipType)
 
+		scriptIsModifyingClipboard := true
 		Clipboard := clipSave
+		waitForClipboard(clipSave)
+		scriptIsModifyingClipboard := false
 	}
 	else{
 		GDIP_Clean()
@@ -366,14 +417,19 @@ peekQuickClip(place){
 		ToolTip, %place%`n%errorNoClipAtIndex%
 	}
 
+
+	peekQuickClipRunning := false
 }
 
 pasteQuickClip(place){
 	global
 	
-	if(scriptIsModifyingClipboard == false && quickClipFiles[place]){
-		scriptIsModifyingClipboard := true
-
+	if(pasteQuickClipRunning){
+		return
+	}
+	pasteQuickClipRunning := true
+	
+	if(quickClipFiles[place]){
 		clipSave := ClipboardAll
 
 		quickClipFile := quickClipLogDir . place
@@ -383,16 +439,26 @@ pasteQuickClip(place){
 		Send, ^v
 		waitForClipboard()
 
+		scriptIsModifyingClipboard := true
 		Clipboard := clipSave
 		waitForClipboard(clipSave)
+		scriptIsModifyingClipboard := false
 	}
 	
 	gosub setStateReady
 
+
+	pasteQuickClipRunning := false
 }
 
 deleteQuickClip(place){
 	global
+	
+	if(deleteQuickClipRunning){
+		return
+	}
+	deleteQuickClipRunning := true
+
 
 	if(quickClipFiles[place]){
 		FileDelete, %quickClipLogDir%%place%.*
@@ -400,4 +466,7 @@ deleteQuickClip(place){
 		
 		ToolTip, %notifyDelQSlot% %place%
 	}
+
+	
+	deleteQuickClipRunning := false
 }
