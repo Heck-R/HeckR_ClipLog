@@ -104,6 +104,98 @@ return
 #if
 
 ;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModeDelete)
+
++!#Left::
++!#LButton::
++!#XButton1::
+	clipMode := clipModeDelete
+	deleteClip("+")
+return
+
++!#Right::
++!#RButton::
++!#XButton2::
+	clipMode := clipModeDelete
+	deleteClip("-")
+return
+
++!#Up::
+	clipMode := clipModeDelete
+	deleteClip("", false)
+return
+
++!#Down::
++!#MButton::
+	clipMode := clipModeDelete
+	deleteClip("", true)
+return
+
+
++!#0::
+!#NumpadIns::
+	clipMode := clipModeDelete
+	deleteClip(0)
+return
+
++!#1::
+!#NumpadEnd::
+	clipMode := clipModeDelete
+	deleteClip(1)
+return
+
++!#2::
+!#NumpadDown::
+	clipMode := clipModeDelete
+	deleteClip(2)
+return
+
++!#3::
+!#NumpadPgdn::
+	clipMode := clipModeDelete
+	deleteClip(3)
+return
+
++!#4::
+!#NumpadLeft::
+	clipMode := clipModeDelete
+	deleteClip(4)
+return
+
++!#5::
+!#NumpadClear::
+	clipMode := clipModeDelete
+	deleteClip(5)
+return
+
++!#6::
+!#NumpadRight::
+	clipMode := clipModeDelete
+	deleteClip(6)
+return
+
++!#7::
+!#NumpadHome::
+	clipMode := clipModeDelete
+	deleteClip(7)
+return
+
++!#8::
+!#NumpadUp::
+	clipMode := clipModeDelete
+	deleteClip(8)
+return
+
++!#9::
+!#NumpadPgup::
+	clipMode := clipModeDelete
+	deleteClip(9)
+return
+
+#if
+
+;------------------------------------------------
 ;------------------------------------------------
 
 #if (clipMode == clipModeNone) or (clipMode == clipModeAdd)

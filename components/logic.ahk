@@ -20,6 +20,11 @@ deleteOldLogFiles(){
 
 ;-------------------------------------------------------
 
+deleteClipFileName(place){
+	global
+	return clipFiles.removeAt(clipFiles.count() - place)
+}
+
 getClipFileName(place){
 	global
 	return clipFiles[clipFiles.count() - place]
@@ -49,6 +54,23 @@ setClipCursorPos(index, new := false){
 		return true
 	} else{
 		return false
+	}
+}
+
+calcPlace(place = ""){
+	global
+	
+	if(place == ""){
+		return clipCursorPos
+	} else if(place == "+"){
+		return clipCursorPos +1
+	} else if(place == "-"){
+		return clipCursorPos -1
+	} else if place is Integer
+	{
+		return place
+	} else{
+		Throw errorWrongParameter
 	}
 }
 
@@ -147,7 +169,7 @@ saveClipb(clipTypeID){
 
 ;--------------------------------------------------------------------------------------------------
 
-changeClip(place = ""){
+changeClip(place = "", force = false, showPreview = true){
 	global
 	
     GDIP_StartDraw()
@@ -157,17 +179,15 @@ changeClip(place = ""){
 		return
 	}
 	
-	prevClipFile := getClipFileName(clipCursorPos)
-	
 	changed := false
 	
 	if( place == "+" ){
-		changed := setClipCursorPos(clipCursorPos +1, false)
+		changed := setClipCursorPos(clipCursorPos +1, force)
 	} else if( place == "-" ){
-		changed := setClipCursorPos(clipCursorPos -1)
+		changed := setClipCursorPos(clipCursorPos -1, force)
 	} else if place is Integer
 	{
-		changed := setClipCursorPos(place)
+		changed := setClipCursorPos(place, force)
 		if( !changed && place != clipCursorPos){
 			ToolTip, %errorNoClipAtIndex%
 			return
@@ -178,7 +198,9 @@ changeClip(place = ""){
 		readClipFromFile(getClipFilePath(clipCursorPos))
 	}
 
-	showClipPreview(clipCursorPos, clipType)
+	if(showPreview){
+		showClipPreview(clipCursorPos, clipType)
+	}
 
 }
 
@@ -246,6 +268,46 @@ instantPaste(place){
 		waitForClipboard(clipSave)
 		gosub setStateReady
 	}
+
+}
+
+deleteClip(place = "", maintainCursorPos = true){
+	global
+	
+	placeToDelete := calcPlace(place)
+	if(scriptIsModifyingClipboard == false && hasClipFile(placeToDelete)){
+		scriptIsModifyingClipboard := true
+
+		FileDelete % getClipFilePath(placeToDelete)
+		deleteClipFileName(placeToDelete)
+	} else{
+		ToolTip, %errorNoClipAtIndex%
+		return
+	}
+
+	deletedClipText := "Deleted clip: " . placeToDelete
+	
+	placeToMove := clipCursorPos
+	if(placeToDelete <= clipCursorPos){
+		if(maintainCursorPos){
+			if(!hasClipFile(placeToMove))
+				placeToMove--
+		} else{
+			placeToMove--
+			if(!hasClipFile(placeToMove))
+				placeToMove++
+		}
+
+		if(hasClipFile(placeToMove)){
+			changeClip(placeToMove, true, false)
+		} else{
+			Clipboard := ""
+			Tooltip % deletedClipText . "`nNo clip is left to change to"
+			return
+		}
+	}
+	
+	Tooltip % deletedClipText . "`nCurrent clip: " . clipCursorPos . "`nNumber of clips remaining: " . clipFiles.Count()
 
 }
 

@@ -90,6 +90,7 @@ SetupClipLogMessages:
 	errorNoClipHistory := "The clipboard history is empty"
 	errorNoSuchTypeStr := "The file is of an unkown type"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
+	errorWrongParameter := "The passed parameter is not valid"
 
 	notifyDelQSlot := "Deleted quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
