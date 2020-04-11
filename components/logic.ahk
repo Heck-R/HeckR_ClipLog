@@ -100,6 +100,15 @@ readClipFromFile(filePathToRead){
 
 }
 
+loadClipData(clipData){
+	global
+
+	scriptIsModifyingClipboard := true
+	Clipboard := clipData
+	waitForClipboard(clipData) ; to make sure saveClipb is triggered
+	scriptIsModifyingClipboard := false
+}
+
 ;------------------------------------------------
 
 waitForClipboard(dataToWaitFor = false){
@@ -284,10 +293,7 @@ instantPaste(place){
 		Send, ^v
 		waitForClipboard()
 
-		scriptIsModifyingClipboard := true
-		Clipboard := clipSave
-		waitForClipboard(clipSave)
-		scriptIsModifyingClipboard := false
+		loadClipData(clipSave)
 
 		gosub setStateReady
 	}
@@ -331,10 +337,7 @@ deleteClip(place = "", maintainCursorPos = false){
 		if(hasClipFile(placeToMove)){
 			changeClip(placeToMove, true, false)
 		} else{
-			scriptIsModifyingClipboard := true
-			Clipboard := ""
-			waitForClipboard("")
-			scriptIsModifyingClipboard := false
+			loadClipData("")
 
 			Tooltip % deletedClipText . "`nNo clip is left to change to"
 			return
@@ -406,10 +409,7 @@ peekQuickClip(place){
 		readClipFromFile(quickClipFile . "." . quickClipType)
 		showClipPreview(place, quickClipType)
 
-		scriptIsModifyingClipboard := true
-		Clipboard := clipSave
-		waitForClipboard(clipSave)
-		scriptIsModifyingClipboard := false
+		loadClipData(clipSave)
 	}
 	else{
 		GDIP_Clean()
@@ -429,6 +429,7 @@ pasteQuickClip(place){
 	}
 	pasteQuickClipRunning := true
 	
+	
 	if(quickClipFiles[place]){
 		clipSave := ClipboardAll
 
@@ -439,10 +440,7 @@ pasteQuickClip(place){
 		Send, ^v
 		waitForClipboard()
 
-		scriptIsModifyingClipboard := true
-		Clipboard := clipSave
-		waitForClipboard(clipSave)
-		scriptIsModifyingClipboard := false
+		loadClipData(clipSave)
 	}
 	
 	gosub setStateReady
