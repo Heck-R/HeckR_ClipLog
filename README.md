@@ -25,7 +25,7 @@ In some cases you might want to reuse the few latest clips, but you dont want to
 
 - **Win + Alt + \<Any number\>**: Instantly paste the clip from the history without changing the content on the clipboard ([note](####Instant-paste-delay))
 
-### 2. Quich clipboard
+### 2. Quick clipboard
 
 Here you can distinguish a few dedicated clips from the others, so they will not get buried in history
 
