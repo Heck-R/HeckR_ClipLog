@@ -296,7 +296,7 @@ instantPaste(place){
 	instantPasteRunning := false
 }
 
-deleteClip(place = "", maintainCursorPos = true){
+deleteClip(place = "", maintainCursorPos = false){
 	global
 	
 	if(deleteClipRunning){
