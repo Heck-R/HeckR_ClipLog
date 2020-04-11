@@ -89,24 +89,23 @@ getUniqueFileExtension(extLessFileWithPath){
 readClipFromFile(filePathToRead){
 	global
 	
-	scriptIsModifyingClipboard = true
+	OnClipboardChange("saveClipb", 0)
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
 		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
 		Reload
 	}
-	scriptIsModifyingClipboard = false
+	OnClipboardChange("saveClipb")
 
 }
 
 loadClipData(clipData){
 	global
 
-	scriptIsModifyingClipboard := true
+	OnClipboardChange("saveClipb", 0)
 	Clipboard := clipData
-	waitForClipboard(clipData) ; to make sure saveClipb is triggered
-	scriptIsModifyingClipboard := false
+	OnClipboardChange("saveClipb")
 }
 
 ;------------------------------------------------
@@ -126,54 +125,56 @@ waitForClipboard(dataToWaitFor = false){
 saveClipb(clipTypeID){
 	global
 	
-	if(scriptIsModifyingClipboard == false){
-		scriptIsModifyingClipboard := true
+	if(saveClipbRunning){
+		return
+	}
+	saveClipbRunning := true
 
-		;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
-		sleep sleepTimeBeforeSaveClip
-		
-		FormatTime, clipFile ,, %fileTimeFormat%
-		clipFile=%clipFile%.%A_MSec%
-		clipFileNoExt := clipFile
-		
-		clipData := ClipboardAll
-		clipSize := StrLen(clipData)
 
-		if( (clipTypeID == 1) || (clipTypeID == 0) ){
-			clipType=%clipTextExt%
-		}
-		else if(clipTypeID == 2){
-			clipType=%clipPicExt%
-		}
-		else {
-			clipType=%clipErrorExt%
-			Clipboard := errorCorruptStr . "`n" . errorTypeStr
-		}
+	;This sleep is needed for some screen snipping tools since they modify the clipboard mltiple times, but only the last modification is the needed result, the rest are useless junk
+	sleep sleepTimeBeforeSaveClip
+	
+	FormatTime, clipFile ,, %fileTimeFormat%
+	clipFile=%clipFile%.%A_MSec%
+	clipFileNoExt := clipFile
+	
+	clipData := ClipboardAll
+	clipSize := StrLen(clipData)
 
-		differentFromLastData := true
-		if(hasClipFiles() && clipType == prevClipType && clipSize == prevClipSize ){
-			if clipData = %prevClipData%
-				differentFromLastData := false
-		}
-		
-		if(differentFromLastData == true){
-			clipFile=%clipFile%.%clipType%
+	if( (clipTypeID == 1) || (clipTypeID == 0) ){
+		clipType=%clipTextExt%
+	}
+	else if(clipTypeID == 2){
+		clipType=%clipPicExt%
+	}
+	else {
+		clipType=%clipErrorExt%
+		Clipboard := errorCorruptStr . "`n" . errorTypeStr
+	}
 
-			clipFiles.Push(clipFile)
-			FileAppend, %ClipboardAll%, %clipLogDir%%clipFile%
-		}
-		setClipCursorPos(0, true)
-
-		prevClipData := clipData
-		prevClipSaveFile := clipFile
-		prevClipType := clipType
-		prevClipSize := clipSize
-
-        deleteOldLogFiles()
-
-		scriptIsModifyingClipboard := false
+	differentFromLastData := true
+	if(hasClipFiles() && clipType == prevClipType && clipSize == prevClipSize ){
+		if clipData = %prevClipData%
+			differentFromLastData := false
 	}
 	
+	if(differentFromLastData == true){
+		clipFile=%clipFile%.%clipType%
+
+		clipFiles.Push(clipFile)
+		FileAppend, %ClipboardAll%, %clipLogDir%%clipFile%
+	}
+	setClipCursorPos(0, true)
+
+	prevClipData := clipData
+	prevClipSaveFile := clipFile
+	prevClipType := clipType
+	prevClipSize := clipSize
+
+	deleteOldLogFiles()
+
+	
+	saveClipbRunning := false
 }
 
 ;--------------------------------------------------------------------------------------------------
@@ -429,7 +430,7 @@ pasteQuickClip(place){
 	}
 	pasteQuickClipRunning := true
 	
-	
+
 	if(quickClipFiles[place]){
 		clipSave := ClipboardAll
 
