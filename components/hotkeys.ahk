@@ -209,6 +209,17 @@ return
 ;------------------------------------------------
 ;------------------------------------------------
 
+#if (clipMode == clipModeNone)
+
++^#Enter::
++^#NumpadEnter::
+	showClipCreatorGUI(true)
+return
+
+#if
+
+;------------------------------------------------
+
 #if (clipMode == clipModeNone) or (clipMode == clipModeAdd)
 
 +^#0::

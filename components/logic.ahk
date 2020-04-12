@@ -353,7 +353,7 @@ deleteClip(place = "", maintainCursorPos = false){
 
 ;--------------------------------------------------------------------------------------------------
 
-setQuickClip(place){
+setQuickClip(place, dataToUse = false){
 	global
 	
 	if(setQuickClipRunning){
@@ -362,7 +362,7 @@ setQuickClip(place){
 	setQuickClipRunning := true
 
 
-	if(!hasClipFiles()){
+	if(!hasClipFiles() && dataToUse == false){
 		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
 		return
 	}
@@ -372,19 +372,29 @@ setQuickClip(place){
 	else
 		quickClipFiles[place] := true
 
-	sourceFile := getClipFilePath(clipCursorPos)
-	destinationFile := quickClipLogDir . place . "." . clipType
-	
-	FileCopy, %sourceFile%, %destinationFile%, 1
+	if(dataToUse == false){
+		sourceFile := getClipFilePath(clipCursorPos)
+		destinationFile := quickClipLogDir . place . "." . clipType
+		
+		FileCopy, %sourceFile%, %destinationFile%, 1
+		
+		changeClip()
+		ControlGetText,tmpTooltipText,,ahk_class tooltips_class32
+		startOfSecondLine := InStr(tmpTooltipText, "`n")+1
+		if( startOfSecondLine == 1 || StrLen(tmpTooltipText) < startOfSecondLine)
+			tmpTooltipText := ""
+		else
+			tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
+			
+		Tooltip %notifySavedQSlot% %place%`n%tmpTooltipText%
+	} else{
+		destinationFile := quickClipLogDir . place . "." . clipTextExt
 
-	changeClip()
-	ControlGetText,tmpTooltipText,,ahk_class tooltips_class32
-	startOfSecondLine := InStr(tmpTooltipText, "`n")+1
-	if( startOfSecondLine == 1 || StrLen(tmpTooltipText) < startOfSecondLine)
-		tmpTooltipText := ""
-	else
-		tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
-	Tooltip %notifySavedQSlot% %place%`n%tmpTooltipText%
+		clipSave := ClipboardAll
+		Clipboard := dataToUse
+		FileAppend, %ClipboardAll%, %destinationFile%
+		loadClipData(clipSave)
+	}
 
 
 	setQuickClipRunning := false

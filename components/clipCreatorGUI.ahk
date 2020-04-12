@@ -1,5 +1,5 @@
 
-showClipCreatorGUI(displayDropdown = false){
+showClipCreatorGUI(createAsQuickClip = false){
     global
 
     Gui New
@@ -10,9 +10,9 @@ showClipCreatorGUI(displayDropdown = false){
     Gui Add, Edit, hWndhEdtValue x8 y24 w224 h108 vEditContent -Wrap
     Gui Add, Button, hWndhBtnOk x8 y144 w80 h24 gOkClick, OK
     Gui Add, Button, hWndhBtnCancel x96 y144 w80 h24 gCancelClick, Cancel
-    if(displayDropdown){
+    if(createAsQuickClip){
         Gui Font, s10
-        Gui Add, DropDownList, hWndhDDLItems x200 y144 w32, 0||1|2|3|4|5|6|7|8|9
+        Gui Add, DropDownList, hWndhDDLItems x200 y144 w32 vQuickClipSlot, 0||1|2|3|4|5|6|7|8|9
         Gui Font
     }
 
@@ -29,13 +29,20 @@ showClipCreatorGUI(displayDropdown = false){
         AutoXYWH("y", hBtnOk)
         AutoXYWH("y", hBtnCancel)
 
-        if(displayDropdown)
+        if(createAsQuickClip)
             AutoXYWH("xy", hDDLItems)
     Return
 
     OkClick:
-        GuiControlGet, EditContent
-        Clipboard := EditContent
+        GuiControlGet EditContent
+        GuiControlGet QuickClipSlot
+
+        if QuickClipSlot is Integer
+        {
+            setQuickClip(QuickClipSlot, EditContent)
+        } else{
+            Clipboard := EditContent
+        }
         
         Gui Destroy
     Return
