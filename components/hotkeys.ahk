@@ -105,6 +105,17 @@ return
 
 ;------------------------------------------------
 
+#if (clipMode == clipModeNone)
+
++#Enter::
++#NumpadEnter::
+	showClipCreatorGUI()
+return
+
+#if
+
+;------------------------------------------------
+
 #if (clipMode == clipModeNone) or (clipMode == clipModeDelete)
 
 +!#Left::
