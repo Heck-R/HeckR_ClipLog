@@ -25,6 +25,11 @@ In some cases you might want to reuse the few latest clips, but you dont want to
 
 - **Win + Alt + \<Any number\>**: Instantly paste the clip from the history without changing the content on the clipboard ([note](#Instant-paste-delay))
 
+While the default purpose of the history is what its name suggests (containing the history), there are a few other ways available to add clips to the history
+
+- **Win + Shift + Enter**: A small window pops up, where you can enter some text you wish to save to the history. If you press the OK button, the text will be copied to the clipboard and will be saved to the history. (Note, that there is no autosave, thus the content inside the windows will only be saved if you press the OK button)
+- **Win + Shift + \<Any number\>**: Add the quickClip indexed with the pressed number (if it exists) to the history and put it on the clipboard
+
 It is also possible to delete clips from the history, which can be useful in case there is some sensitive data on them, or a few large clips take up too much space etc. When a clip in the history gets deleted all of the older clips' indexes become one less. This also applies to the selected clip  
 ___For example___: if we delete index 2, the old index 3 will become the new index 2, the old index 4 will become the new index 3 and so on...
 
@@ -53,6 +58,7 @@ There are 10 quick clip slots available (0-9)
 #### Hotkeys
 
 - **Win + Shift + Ctrl + \<Any number\>**: Save the current clipboard data to the the quick clip at the position of the number you pressed
+- **Win + Shift + Ctrl + Enter**: A small window pops up, where you can enter some text you wish to save to one of the quickClip slots. You can select the quickClip slot by selecting a number in the dropdown list at the bottom right (0 by default). If you press the OK button, the text will be saved to the selected quickClip slot. (Note, that there is no autosave, thus the content inside the windows will only be saved if you press the OK button)
 - **Win + Shift + Ctrl + Alt + \<Any number\>**: Delete the clipboard data to the the quick clip at the position of the number you pressed ([note](#Microsoft's-Office-hotkey-interference))
 - **Win + Ctrl + \<Any number\>**: Open a preview of the quck clip at the position of the number you pressed
 - **Win + Ctrl + Alt + \<Any number\>**: Instant paste the quck clip at the position of the number you pressed (without adding it to the history) ([note](#Instant-paste-delay))
@@ -69,7 +75,8 @@ There is a normally unnoticable delay before you can do something again, which i
 
 #### Microsoft's Office hotkey interference
 
-Microsoft recently put an inbuilt hotkey into Windows, which you have to manually disable if you do not wish to have MS Office pop up every time. You can find some information about this on the following page: [HowToGeek - How to Remap the Office Key on Your Keyboard](https://www.howtogeek.com/445318/how-to-remap-the-office-key-on-your-keyboard/)  
+Microsoft recently put an inbuilt hotkey into Windows, which you have to manually disable if you do not wish to have MS Office pop up every time. You can find some information about this on the following page: [HowToGeek - How to Remap the Office Key on Your Keyboard](https://www.howtogeek.com/445318/how-to-remap-the-office-key-on-your-keyboard/)
+
 The method I recommend is using the `REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32` command in your PowerShell console.
 
 #### Responsibility
@@ -91,8 +98,13 @@ On better / gaming mouses there are usually 2 extra buttons at the thumb. This i
 
 ## Dependencies
 
-All of the dependencies can be found in the following repository: [HeckR_AUH-Lib](https://github.com/Heck-R/HeckR_AUH-Lib)  
+If you wish to use / play around with the scripts instead of the built version, you need some dependencies  
+All of the dependencies can be found in the following repository: [HeckR_AUH-Lib](https://github.com/Heck-R/HeckR_AUH-Lib)
+
+The dependencies should be placed anywhere where they can be imported using the angle bracket syntax (e.g.: \<modulname\>). One possibility is to put them directly inside a folder named "Lib" next to the main script (HeckR_ClipLog.ahk)
+
 Some of these might be 3rd party scripts. The original authors and sources are linked in the repository provided above
 
+- AutoXYWH.ahk
 - GDIP_All.ahk
 - GDIPHelper.ahk
