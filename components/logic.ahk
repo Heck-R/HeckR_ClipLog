@@ -86,25 +86,37 @@ getUniqueFileExtension(extLessFileWithPath){
 	}
 }
 
+getFullPathOfQuickClip(place){
+	global
+
+	quickClipFile := quickClipLogDir . place
+	quickClipType := getUniqueFileExtension(quickClipFile)
+
+	return quickClipFile . "." . quickClipType
+}
+
 readClipFromFile(filePathToRead){
 	global
-	
-	OnClipboardChange("saveClipb", 0)
+
 	try {
 		FileRead, Clipboard, *c %filePathToRead%
 	} catch e {
 		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
 		Reload
 	}
-	OnClipboardChange("saveClipb")
-
 }
 
-loadClipData(clipData){
+loadClipDataWithoutSaving(data, isFilePath = false){
 	global
-
+	
 	OnClipboardChange("saveClipb", 0)
-	Clipboard := clipData
+	
+	if(isFilePath){
+		readClipFromFile(data)
+	} else{
+		Clipboard := data
+	}
+	
 	OnClipboardChange("saveClipb")
 }
 
@@ -188,8 +200,6 @@ changeClip(place = "", force = false, showPreview = true){
 	changeClipRunning := true
 
 
-    GDIP_StartDraw()
-
 	if( !hasClipFiles() ){
 		ToolTip, %errorNoClipHistory%
 		return
@@ -211,7 +221,7 @@ changeClip(place = "", force = false, showPreview = true){
 	}
 	
 	if(changed){
-		readClipFromFile(getClipFilePath(clipCursorPos))
+		loadClipDataWithoutSaving(getClipFilePath(clipCursorPos), true)
 	}
 
 	if(showPreview){
@@ -222,7 +232,7 @@ changeClip(place = "", force = false, showPreview = true){
 	changeClipRunning := false
 }
 
-showClipPreview(tooltipIndex, cType){
+showClipPreview(tooltipHeader, cType){
 	global
 	
 	if(showClipPreviewRunning){
@@ -230,6 +240,8 @@ showClipPreview(tooltipIndex, cType){
 	}
 	showClipPreviewRunning := true
 
+
+    GDIP_StartDraw()
 
 	GDIP_Clean()
 	GDIP_Update()
@@ -239,10 +251,16 @@ showClipPreview(tooltipIndex, cType){
 			prevStr := SubStr(Clipboard, 1 , 1000)
 		else
 			prevStr := Clipboard
-		ToolTip %tooltipIndex%`n%prevStr%
+		
+		tooltipText := prevStr
+		if(tooltipHeader != "")
+			tooltipText = %tooltipHeader%`n%tooltipText%
+		
+		ToolTip %tooltipText%
 	}
 	else if(cType == clipPicExt){
-		ToolTip %tooltipIndex%
+		if(tooltipHeader != "")
+			ToolTip %tooltipHeader%
 
 		clipPicBitmap := Gdip_CreateBitmapFromClipboard()
 		
@@ -290,17 +308,41 @@ instantPaste(place){
 	if(hasClipFile(place)){
 		clipSave := ClipboardAll
 		
-		readClipFromFile(clipLogDir . getClipFileName(place))
+		loadClipDataWithoutSaving(clipLogDir . getClipFileName(place), true)
 		Send, ^v
 		waitForClipboard()
 
-		loadClipData(clipSave)
+		loadClipDataWithoutSaving(clipSave)
 
 		gosub setStateReady
 	}
 
 
 	instantPasteRunning := false
+}
+
+AddClipFromQuickClip(quickClipIndex){
+	global
+	
+	if(AddClipFromQuickClipRunning){
+		return
+	}
+	AddClipFromQuickClipRunning := true
+
+
+	if(!quickClipFiles[quickClipIndex]){
+		ToolTip, %errorNoClipAtIndex%
+		return
+	}
+
+
+	quickClipPath := getFullPathOfQuickClip(quickClipIndex)
+	readClipFromFile(quickClipPath)
+	
+	peekQuickClip(quickClipIndex, notifySavedHSlot)
+	
+
+	AddClipFromQuickClipRunning := false
 }
 
 deleteClip(place = "", maintainCursorPos = false){
@@ -338,7 +380,7 @@ deleteClip(place = "", maintainCursorPos = false){
 		if(hasClipFile(placeToMove)){
 			changeClip(placeToMove, true, false)
 		} else{
-			loadClipData("")
+			loadClipDataWithoutSaving("")
 
 			Tooltip % deletedClipText . "`nNo clip is left to change to"
 			return
@@ -378,29 +420,22 @@ setQuickClip(place, dataToUse = false){
 		
 		FileCopy, %sourceFile%, %destinationFile%, 1
 		
-		changeClip()
-		ControlGetText,tmpTooltipText,,ahk_class tooltips_class32
-		startOfSecondLine := InStr(tmpTooltipText, "`n")+1
-		if( startOfSecondLine == 1 || StrLen(tmpTooltipText) < startOfSecondLine)
-			tmpTooltipText := ""
-		else
-			tmpTooltipText := SubStr(tmpTooltipText, startOfSecondLine)
-			
-		Tooltip %notifySavedQSlot% %place%`n%tmpTooltipText%
+		previewHeader = %notifySavedQSlot% %place%
+		showClipPreview(previewHeader, clipType)
 	} else{
 		destinationFile := quickClipLogDir . place . "." . clipTextExt
 
 		clipSave := ClipboardAll
 		Clipboard := dataToUse
 		FileAppend, %ClipboardAll%, %destinationFile%
-		loadClipData(clipSave)
+		loadClipDataWithoutSaving(clipSave)
 	}
 
 
 	setQuickClipRunning := false
 }
 
-peekQuickClip(place){
+peekQuickClip(place, customHeader = ""){
 	global
 	
 	if(peekQuickClipRunning){
@@ -414,13 +449,15 @@ peekQuickClip(place){
 	if(quickClipFiles[place]){
 		clipSave := ClipboardAll
 
-		quickClipFile := quickClipLogDir . place
-		quickClipType := getUniqueFileExtension(quickClipFile)
+		quickClipPath := getFullPathOfQuickClip(place)
+		loadClipDataWithoutSaving(quickClipPath, true)
 
-		readClipFromFile(quickClipFile . "." . quickClipType)
-		showClipPreview(place, quickClipType)
+		previewHeader := place
+		if(customHeader != "")
+			previewHeader := customHeader
+		showClipPreview(previewHeader, getExtension(quickClipPath))
 
-		loadClipData(clipSave)
+		loadClipDataWithoutSaving(clipSave)
 	}
 	else{
 		GDIP_Clean()
@@ -444,14 +481,12 @@ pasteQuickClip(place){
 	if(quickClipFiles[place]){
 		clipSave := ClipboardAll
 
-		quickClipFile := quickClipLogDir . place
-		quickClipType := getUniqueFileExtension(quickClipFile)
-
-		readClipFromFile(quickClipFile . "." . quickClipType)
+		quickClipPath := getFullPathOfQuickClip(place)
+		loadClipDataWithoutSaving(quickClipPath, true)
 		Send, ^v
 		waitForClipboard()
 
-		loadClipData(clipSave)
+		loadClipDataWithoutSaving(clipSave)
 	}
 	
 	gosub setStateReady

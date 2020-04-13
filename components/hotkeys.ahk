@@ -116,6 +116,72 @@ return
 
 ;------------------------------------------------
 
+#if (clipMode == clipModeNone) or (clipMode == clipModeAdd)
+
++#0::
+#NumpadIns::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(0)
+return
+
++#1::
+#NumpadEnd::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(1)
+return
+
++#2::
+#NumpadDown::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(2)
+return
+
++#3::
+#NumpadPgdn::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(3)
+return
+
++#4::
+#NumpadLeft::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(4)
+return
+
++#5::
+#NumpadClear::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(5)
+return
+
++#6::
+#NumpadRight::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(6)
+return
+
++#7::
+#NumpadHome::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(7)
+return
+
++#8::
+#NumpadUp::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(8)
+return
+
++#9::
+#NumpadPgup::
+	clipMode := clipModeAdd
+	AddClipFromQuickClip(9)
+return
+
+#if
+
+;------------------------------------------------
+
 #if (clipMode == clipModeNone) or (clipMode == clipModeDelete)
 
 +!#Left::

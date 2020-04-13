@@ -94,6 +94,7 @@ SetupClipLogMessages:
 
 	notifyDelQSlot := "Deleted quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
+	notifySavedHSlot := "Clip saved to the history"
 
 return
 
