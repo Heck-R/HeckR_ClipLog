@@ -285,7 +285,7 @@ showClipPreview(tooltipHeader, cType){
 
 		MouseGetPos, xPos, yPos
 		
-		Gdip_DrawImage(GDIP_Graphics, clipPicBitmap, -GDIP_TopLeftPoint.x + xPos + 16, -GDIP_TopLeftPoint.y + yPos + 16, clipPicW, clipPicH)
+		Gdip_DrawImage(GDIP_Graphics, clipPicBitmap, GDIP_PosOnDesktop(xPos+16, "x"), GDIP_PosOnDesktop(yPos+16, "y"), clipPicW, clipPicH)
 		GDIP_Update()
 	}
 	else{
