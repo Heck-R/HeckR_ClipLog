@@ -41,8 +41,12 @@ return
 return
 
 #Up::
-#Down::
 #MButton::
+	clipMode := clipModePreview
+	changeClip("", true)
+return
+
+#Down::
 	clipMode := clipModePreview
 	changeClip()
 return

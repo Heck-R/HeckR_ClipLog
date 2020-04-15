@@ -211,6 +211,8 @@ changeClip(place = "", force = false, showPreview = true){
 		changed := setClipCursorPos(clipCursorPos +1, force)
 	} else if( place == "-" ){
 		changed := setClipCursorPos(clipCursorPos -1, force)
+	} else if(place == "" && force){
+		changed := setClipCursorPos(clipCursorPos, force)
 	} else if place is Integer
 	{
 		changed := setClipCursorPos(place, force)
