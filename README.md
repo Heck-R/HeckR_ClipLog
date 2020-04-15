@@ -2,7 +2,7 @@
 
 HeckR_ClipLog is not only a log as it's name would suggest, but a full fledged clipboard manager which can be controlled through hotkeys.
 
-## Functionality & Usage
+## Functionallity & Usage
 
 In HeckR_ClipLog there are 2 types of clipboard groups
 
@@ -18,7 +18,7 @@ Change clipboard content, while moving across the history, and showing the previ
 
 - **Win + (LeftArrow / LeftClick / MouseForward / ScrollDown)**: Go one position back in the history
 - **Win + (RightArrow / RightClick / MouseBackward / ScrollUp)**: Go one position forward in the history
-- **Win + (UpArrow / DownArrow / MiddleMouseButton)**: Only show the preview of the current clip
+- **Win + (UpArrow / DownArrow / MiddleMouseButton)**: Only show the preview of the current clip ([note](#Preview-of-current-clip))
 - **Win + \<Any number\>**: Go to the clip with the number pressed
 
 In some cases you might want to reuse the few latest clips, but you dont want to switch to them before copying. In this case, you can just instant copy them
@@ -69,9 +69,20 @@ There are 10 quick clip slots available (0-9)
 
 Any kind of preview of message will open via a tooltip below the cursor (or if that's not possible, then at the top of the screen), and it remains open as long as you hold down the modifier keys needed for the hotkey you used (modifier keys include: Win, Shift, Ctrl, Alt)
 
+#### Preview of current clip
+
+While the UpArrow, DownArrow and the MiddleMouseButton can usually be used interchangeably for previewing the current clip, there is a slight difference in functionallity
+
+- DownArrow: Nothing is loaded, the preview is created from the actual clipboard data
+- UpArrow and MiddleMouseButton: Before the preview is created, the clip data is loaded from the file with the current index. This is usually unnecessary, but there is an [exception](#Loading-back-the-last-saved-clip-after-starting-HeckR_ClipLog)
+
 #### Instant paste delay
 
 There is a normally unnoticable delay before you can do something again, which is due to this functionallity should not really be possible, thus it uses a little workaround
+
+#### Loading back the last saved clip after starting HeckR_ClipLog
+
+The intended use of this script is having it automatically started my windows, but in this case it is not possible to automatically load the last clip, since windows locks the files until the user logs in. This means that even if there is a clip in the history with the current index, it is not loaded yet. This is automatically fixed if something is being copied, or any functionallity is being used which loads a clip
 
 #### Microsoft's Office hotkey interference
 
