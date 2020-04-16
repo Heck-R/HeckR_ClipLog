@@ -63,6 +63,12 @@ There are 10 quick clip slots available (0-9)
 - **Win + Ctrl + \<Any number\>**: Open a preview of the quck clip at the position of the number you pressed
 - **Win + Ctrl + Alt + \<Any number\>**: Instant paste the quck clip at the position of the number you pressed (without adding it to the history) ([note](#Instant-paste-delay))
 
+### Additional functionallities
+
+#### Hotkeys
+
+- **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionallities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
+
 ### Notes
 
 #### Previews
