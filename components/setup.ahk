@@ -69,6 +69,8 @@ SetupClipLogFinalValues:
 	clipModeAdd := "add"
 	clipModeDelete := "delete"
 
+	clipModePaused := "paused"
+
 	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"
 
 	minwaitForClipboard := 50
@@ -111,7 +113,8 @@ SetupClipLogGlobalVariables:
 	prevClipData := ""
 	prevClipType := ""
 	prevClipSize := 0
-	
+
+	isLogging := true
 	scriptIsModifyingClipboard := false
 
 return

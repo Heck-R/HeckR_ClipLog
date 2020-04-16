@@ -1,5 +1,5 @@
 
-#if (clipMode != clipModeNone) and (clipMode != clipModePaste)
+#if (clipMode != clipModeNone) and (clipMode != clipModePaste) and (clipMode != clipModePaused)
 
 	Shift Up::
 	Ctrl Up::
@@ -15,6 +15,34 @@
 		scriptIsModifyingClipboard := false
 		clipMode := clipModeNone
 		tooltip
+	return
+
+#if
+
+;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModePaused)
+
+	+#L::
+		isLogging := !isLogging
+		clipMode := [clipModePaused, clipModeNone][isLogging + 1]
+		
+		if(isLogging){
+			Clipboard := ""
+			changeClip("", true, false)
+		}
+		OnClipboardChange("saveClipb", isLogging)
+
+		ToolTip, % "ClipLog: " . ["Off", "On"][isLogging + 1]
+		logToolTipOn := true
+	return
+
+#if logToolTipOn
+
+	Shift Up::
+	LWin Up::
+		ToolTip
+		logToolTipOn := false
 	return
 
 #if
