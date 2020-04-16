@@ -69,47 +69,47 @@ There are 10 quick clip slots available (0-9)
 
 - **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionallities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
 
-### Notes
+## Notes
 
-#### Previews
+### Previews
 
 Any kind of preview of message will open via a tooltip below the cursor (or if that's not possible, then at the top of the screen), and it remains open as long as you hold down the modifier keys needed for the hotkey you used (modifier keys include: Win, Shift, Ctrl, Alt)
 
-#### Preview of current clip
+### Preview of current clip
 
 While the UpArrow, DownArrow and the MiddleMouseButton can usually be used interchangeably for previewing the current clip, there is a slight difference in functionallity
 
 - DownArrow: Nothing is loaded, the preview is created from the actual clipboard data
 - UpArrow and MiddleMouseButton: Before the preview is created, the clip data is loaded from the file with the current index. This is usually unnecessary, but there is an [exception](#Loading-back-the-last-saved-clip-after-starting-HeckR_ClipLog)
 
-#### Instant paste delay
+### Instant paste delay
 
 There is a normally unnoticable delay before you can do something again, which is due to this functionallity should not really be possible, thus it uses a little workaround
 
-#### Loading back the last saved clip after starting HeckR_ClipLog
+### Loading back the last saved clip after starting HeckR_ClipLog
 
 The intended use of this script is having it automatically started my windows, but in this case it is not possible to automatically load the last clip, since windows locks the files until the user logs in. This means that even if there is a clip in the history with the current index, it is not loaded yet. This is automatically fixed if something is being copied, or any functionallity is being used which loads a clip
 
-#### Microsoft's Office hotkey interference
+### Microsoft's Office hotkey interference
 
 Microsoft recently put an inbuilt hotkey into Windows, which you have to manually disable if you do not wish to have MS Office pop up every time. You can find some information about this on the following page: [HowToGeek - How to Remap the Office Key on Your Keyboard](https://www.howtogeek.com/445318/how-to-remap-the-office-key-on-your-keyboard/)
 
 The method I recommend is using the `REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32` command in your PowerShell console.
 
-#### Responsibility
+### Responsibility
 Only use or do anything at your own risk. I do not take responsibility for any damage which occours from using or following anything here in any way, shape or form
 
-#### Key namings
+### Key namings
 
-##### MiddleMouseButton
+#### MiddleMouseButton
 
 Clicking on the mouse wheel
 
-##### MouseForward
+#### MouseForward
 
 On better / gaming mouses there are usually 2 extra buttons at the thumb. This is usually the one closer to the user
 
-##### MouseBackward
+#### MouseBackward
 
 On better / gaming mouses there are usually 2 extra buttons at the thumb. This is usually the one further from the user
 
