@@ -125,6 +125,7 @@ Some of these might be 3rd party scripts. The original authors and sources are l
 - AutoXYWH.ahk
 - GDIP_All.ahk
 - GDIPHelper.ahk
+- HeckerFunc.ahk
 
 # Donate
 
