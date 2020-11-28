@@ -1,7 +1,8 @@
 
+#Include <AutoXYWH>
 #include <GDIP_All>
 #include <GDIPHelper>
-#Include <AutoXYWH>
+#include <HeckerFunc>
 
 ;-------------------------------------------------------
 

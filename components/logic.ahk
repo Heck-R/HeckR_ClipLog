@@ -261,8 +261,11 @@ showClipPreview(tooltipHeader, cType){
 		FileRead, binClipContent, % getClipFilePath(clipCursorPos)
 		; Remove NUL characters from the binary data, to prevent AutoHotkey to truncate it
 		noNulBinClipContent := RegExReplace(binClipContent, "\0" , "")
-		
-		tooltipText = %warningBinClipType%`n`nContent:`n%noNulBinClipContent%
+
+		tooltipText := warningBinClipType . "`n"
+		tooltipText .= "(Clipboard format IDs: [" . join(",", getClipFormatIDs()*) . "])`n`n"
+		tooltipText .= "Content:`n"
+		tooltipText .= noNulBinClipContent
 	}
 	else if(cType == clipPicExt){
 		clipPicBitmap := Gdip_CreateBitmapFromClipboard()
