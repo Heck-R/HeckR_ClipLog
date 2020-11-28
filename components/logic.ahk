@@ -154,10 +154,12 @@ saveClipb(clipTypeID){
 	clipSize := StrLen(clipData)
 
 	if( (clipTypeID == 1) || (clipTypeID == 0) ){
-		clipType=%clipTextExt%
+		; Clipboard data is either empty (0) or text (1)
+		clipType := clipTextExt
 	}
 	else if(clipTypeID == 2){
-		clipType=%clipPicExt%
+		; Set clipType based on it being a bitmap (2 ~ CF_BITMAP / image data) or not
+		clipType := DllCall("IsClipboardFormatAvailable", "Uint", 2) ? clipPicExt : clipBinExt
 	}
 	else {
 		clipType=%clipErrorExt%
@@ -248,22 +250,21 @@ showClipPreview(tooltipHeader, cType){
 	GDIP_Clean()
 	GDIP_Update()
 
+	; Variable to store preview text in
+	tooltipText := ""
+
 	if(cType == clipTextExt){
-		if(StrLen(Clipboard) > 1000)
-			prevStr := SubStr(Clipboard, 1 , 1000)
-		else
-			prevStr := Clipboard
+		tooltipText := Clipboard
+	}
+	else if(cType == clipBinExt){
+		; Read the binary file as raw, so it can be shown as text
+		FileRead, binClipContent, % getClipFilePath(clipCursorPos)
+		; Remove NUL characters from the binary data, to prevent AutoHotkey to truncate it
+		noNulBinClipContent := RegExReplace(binClipContent, "\0" , "")
 		
-		tooltipText := prevStr
-		if(tooltipHeader != "")
-			tooltipText = %tooltipHeader%`n%tooltipText%
-		
-		ToolTip %tooltipText%
+		tooltipText = %warningBinClipType%`n`nContent:`n%noNulBinClipContent%
 	}
 	else if(cType == clipPicExt){
-		if(tooltipHeader != "")
-			ToolTip %tooltipHeader%
-
 		clipPicBitmap := Gdip_CreateBitmapFromClipboard()
 		
 		picW := Gdip_GetImageWidth(clipPicBitmap)
@@ -291,8 +292,18 @@ showClipPreview(tooltipHeader, cType){
 		GDIP_Update()
 	}
 	else{
-		ToolTip %errorNoSuchTypeStr%
+		tooltipText := errorNoSuchTypeStr
 	}
+
+	; Add header if provided
+	if(tooltipHeader != "")
+		tooltipText := tooltipHeader . (tooltipText == "" ? "" : "`n" . tooltipText)
+
+	; Cut off the end of the tooltip text if it is too long
+	if(StrLen(tooltipText) > 1000)
+		tooltipText := SubStr(tooltipText, 1 , 1000)
+	
+	ToolTip % tooltipText
 
 	
 	showClipPreviewRunning := false

@@ -61,6 +61,7 @@ SetupClipLogFinalValues:
 
 	clipTextExt := "clog"
 	clipPicExt := "plog"
+	clipBinExt := "blog"
 	clipErrorExt := "elog"
 
 	clipModeNone := "none"
@@ -93,6 +94,8 @@ SetupClipLogMessages:
 	errorNoSuchTypeStr := "The file is of an unkown type"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
 	errorWrongParameter := "The passed parameter is not valid"
+	
+	warningBinClipType := "The clip is of an unknown binary type.`nIt may not display correctly"
 
 	notifyDelQSlot := "Deleted quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
