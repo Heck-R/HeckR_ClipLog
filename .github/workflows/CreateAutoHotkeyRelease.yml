@@ -1,0 +1,121 @@
+
+name: Create AutoHotkey Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+env:
+  AUH_script_name: '${{ github.event.repository.name }}'
+  changelog_name: changelog.md
+
+jobs:
+  compile-script:
+    name: 'Compile Script'
+    
+    runs-on: windows-2019
+    
+    env:
+      AUH_download_link: 'https://www.autohotkey.com/download/1.1/AutoHotkey_1.1.33.02.zip'
+      AUH_download_name: 'AutoHotkeyDownload.zip'
+      AUH_download_target_folder: 'AutoHotkeySource'
+      AUH_exe: 'AutoHotkeyU32.exe'
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Provision AutoHotkey Compiler
+        run: |
+          Write-Host "Downloading AutoHotkey from '${{ env.AUH_download_link }}'..."
+          Invoke-WebRequest -Uri "${{ env.AUH_download_link }}" -OutFile "${{ env.AUH_download_name }}"
+          
+          Write-Host "Extracting AutoHotkey archive..."
+          Expand-Archive -Path "${{ env.AUH_download_name }}" -DestinationPath "${{ env.AUH_download_target_folder }}"
+
+      - name: Compile AutoHotkey Script
+        run: |
+          # Variables
+          $ahkExePath = "${{ env.AUH_download_target_folder }}\${{ env.AUH_exe }}"
+          
+          # Logic
+          Write-Host "Compiling..."
+          ."${{ env.AUH_download_target_folder }}\Compiler\Ahk2Exe.exe" /in "${{ env.AUH_script_name }}.ahk" /out "${{ env.AUH_script_name }}.exe" /ahk "$ahkExePath" /compress 0
+      
+      - name: Create Changelog From Commit Messages
+        run: |
+          $targetTagVersion = ("${{ github.ref }}" -split "/")[-1]
+          $lastCommitId = ""
+          $tags = git tag --sort version:refname
+          foreach($tag in $tags) {
+            if (-not ($tag -match "^v\d+\.\d+\.\d+$")) {
+              continue
+              }
+            if ($tag -eq "$targetTagVersion") {
+              break
+            } else {
+              $lastCommitId = $tag
+            }
+          }
+          $startCommitId = ""
+          if ("" -ne $lastCommitId) {
+            $startCommitId = $lastCommitId
+          } else {
+            $startCommitId = git rev-list --max-parents=0 "$targetTagVersion"
+          }
+          
+          Write-Host "Collecting commit messages from: '$startCommitId'"
+          $messages = git log --pretty="%s" "$startCommitId...$targetTagVersion"
+          Write-Host $messages
+          
+          Write-Host "Creating markdown from changes..."
+          "Changes:`n" > ${{ env.changelog_name }}
+          git log --pretty="%s" "$startCommitId...$targetTagVersion" | Sort-Object -Unique {$_} | ForEach-Object {"- $_"} >> ${{ env.changelog_name }}
+          Write-Host "Created ${{ env.changelog_name }}"
+      
+      - name: Upload Release Sources as an Artifact
+        uses: actions/upload-artifact@v2.2.1
+        with:
+          name: 'ReleaseSources'
+          path: |
+            ${{ env.AUH_script_name }}.exe
+            ${{ env.changelog_name }}
+          retention-days: 365
+
+  create-release:
+    name: 'Create Release'
+    
+    runs-on: windows-2019
+    needs: [compile-script]
+
+    steps:
+      - name: Download Release Sources Artifact
+        uses: actions/download-artifact@v2.0.7
+        with:
+          name: 'ReleaseSources'
+      
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body_path: ${{ env.changelog_name }}
+          draft: true
+          prerelease: false
+      
+      - name: Upload Executable as Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          asset_path: '${{ env.AUH_script_name }}.exe'
+          asset_name: '${{ env.AUH_script_name }}.exe'
+          asset_content_type: application/zip
