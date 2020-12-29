@@ -204,6 +204,8 @@ changeClip(place = "", force = false, showPreview = true){
 
 	if( !hasClipFiles() ){
 		ToolTip, %errorNoClipHistory%
+		
+		changeClipRunning := false
 		return
 	}
 	
@@ -422,6 +424,8 @@ setQuickClip(place, dataToUse = false){
 
 	if(!hasClipFiles() && dataToUse == false){
 		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
+
+		setQuickClipRunning := false
 		return
 	}
 
