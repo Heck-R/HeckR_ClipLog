@@ -17,11 +17,11 @@ showClipCreatorGUI(createAsQuickClip = false){
     }
 
     Gui Show, w240 h176, Clip Creator
-    Return
+    return
 
     GuiSize:
         if (A_EventInfo == 1) {
-            Return
+            return
         }
 
         AutoXYWH("w*", hTxtText)
@@ -31,7 +31,7 @@ showClipCreatorGUI(createAsQuickClip = false){
 
         if (createAsQuickClip)
             AutoXYWH("xy", hDDLItems)
-    Return
+    return
 
     OkClick:
         GuiControlGet EditContent
@@ -45,11 +45,11 @@ showClipCreatorGUI(createAsQuickClip = false){
         }
         
         Gui Destroy
-    Return
+    return
 
     CancelClick:
     GuiEscape:
     GuiClose:
         Gui Destroy
-    Return
+    return
 }
