@@ -53,14 +53,27 @@ ___For example___: if we delete index 2, the old index 3 will become the new ind
 
 Here you can distinguish a few dedicated clips from the others, so they will not get buried in history
 
-There are 10 quick clip slots available (0-9)
+### Quick Clip Tables
+
+Quick clip tables are a collection of 10 dedicated quick clip slots, that can be used to store clipboard data
+
+There are 2 types of quick clip tables:
+- **Numbered**  \
+  There are 10 numbered quick clip tables by default (0-9)  \
+  These are always available without any additional prior configuration
+- **Named (custom)**  \
+  In addition, there are a custom number of named quick clip tables based on the configuration file (for details, see the [Settings](#Settings))  \
+  Regardless of the configuration, one named quick clip table is always available, called `default`  \
+  As its name suggests, the default table is selected on startup
 
 ### Hotkeys
 
-- **Win + Shift + Ctrl + \<Any number\>**: Save the current clipboard data to the the quick clip at the position of the number you pressed
+- **Shift + Ctrl + \<Any number\>**: Change to the associated quick clip table
+- **Shift + Ctrl + Tab**: Step through the named quick clip tables (for details, see the `customQuickClipTables` key under the [Settings](#Settings))
+- **Win + Shift + Ctrl + \<Any number\>**: Save the current clipboard data to the quick clip at the position of the number you pressed
 - **Win + Shift + Ctrl + Enter**: A small window pops up, where you can enter some text you wish to save to one of the quickClip slots. You can select the quickClip slot by selecting a number in the dropdown list at the bottom right (0 by default). If you press the OK button, the text will be saved to the selected quickClip slot. (Note, that there is no autosave, thus the content inside the windows will only be saved if you press the OK button)
 - **Win + Shift + Ctrl + Alt + \<Any number\>**: Delete the clipboard data to the the quick clip at the position of the number you pressed ([note](#Microsoft's-Office-hotkey-interference))
-- **Win + Ctrl + \<Any number\>**: Open a preview of the quck clip at the position of the number you pressed
+- **Win + Ctrl + \<Any number\>**: Open a preview of the quock clip at the position of the number you pressed
 - **Win + Ctrl + Alt + \<Any number\>**: Instant paste the quck clip at the position of the number you pressed (without adding it to the history) ([note](#Instant-paste-delay))
 
 ## Additional functionallities
@@ -68,6 +81,23 @@ There are 10 quick clip slots available (0-9)
 ### Hotkeys
 
 - **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionallities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
+
+# Settings
+
+There are a few configuration options available for this script. All of these must be located in a configuration ini with the same name as the script (HeckR_ClipLog.ini)
+
+As the extension suggests, the configuration file must be in `.ini` format  \
+Every setting must be placed under the `settings` section
+
+The existence of the configuration ini is semi-mandatory  \
+While it is not necessary to configure anything for the script to be functional, the configuration file will be created on the script's startup if it does not exist
+
+## Keys
+
+- **customQuickClipTables**  \
+  *Description*: A list of custom quick clip table names to be available  \
+  *Format*: A comma separated string  \
+  *Default*: \<empty string\>
 
 # Notes
 
