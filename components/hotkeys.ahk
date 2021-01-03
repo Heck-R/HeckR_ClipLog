@@ -318,6 +318,77 @@ return
 
 ;------------------------------------------------
 
+; #if (clipMode == clipModeNone) or (clipMode == clipModeSetting)
+
++!Tab::
+	clipMode := clipModeSetting
+	setQuickClipTable()
+return
+
++!0::
+!NumpadIns::
+	clipMode := clipModeSetting
+	setQuickClipTable(0)
+return
+
++!1::
+!NumpadEnd::
+	clipMode := clipModeSetting
+	setQuickClipTable(1)
+return
+
++!2::
+!NumpadDown::
+	clipMode := clipModeSetting
+	setQuickClipTable(2)
+return
+
++!3::
+!NumpadPgdn::
+	clipMode := clipModeSetting
+	setQuickClipTable(3)
+return
+
++!4::
+!NumpadLeft::
+	clipMode := clipModeSetting
+	setQuickClipTable(4)
+return
+
++!5::
+!NumpadClear::
+	clipMode := clipModeSetting
+	setQuickClipTable(5)
+return
+
++!6::
+!NumpadRight::
+	clipMode := clipModeSetting
+	setQuickClipTable(6)
+return
+
++!7::
+!NumpadHome::
+	clipMode := clipModeSetting
+	setQuickClipTable(7)
+return
+
++!8::
+!NumpadUp::
+	clipMode := clipModeSetting
+	setQuickClipTable(8)
+return
+
++!9::
+!NumpadPgup::
+	clipMode := clipModeSetting
+	setQuickClipTable(9)
+return
+
+#if
+
+;------------------------------------------------
+
 #if (clipMode == clipModeNone) or (clipMode == clipModeAdd)
 
 +^#0::
