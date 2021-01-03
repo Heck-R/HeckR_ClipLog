@@ -7,7 +7,7 @@ deleteOldLogFiles(){
         FileDelete, % clipLogDir . clipFiles[A_Index]
     }
 
-	if(oldLogFileNum > 0){
+	if (oldLogFileNum > 0) {
 		newClipFiles := []
 		loop, %maxClipFileNum% {
 			newClipFiles.Push(clipFiles[A_Index + oldLogFileNum])
@@ -48,11 +48,11 @@ hasClipFile(index){
 setClipCursorPos(index, new := false){
 	global
 	
-	if((index != clipCursorPos || new == true) && hasClipFile(index)){
+	if ((index != clipCursorPos || new == true) && hasClipFile(index)) {
 		clipCursorPos := index
 		clipType := getExtension(getClipFileName(clipCursorPos))
 		return true
-	} else{
+	} else {
 		return false
 	}
 }
@@ -60,16 +60,16 @@ setClipCursorPos(index, new := false){
 calcPlace(place = ""){
 	global
 	
-	if(place == ""){
+	if (place == "") {
 		return clipCursorPos
-	} else if(place == "+"){
+	} else if (place == "+") {
 		return clipCursorPos +1
-	} else if(place == "-"){
+	} else if (place == "-") {
 		return clipCursorPos -1
 	} else if place is Integer
 	{
 		return place
-	} else{
+	} else {
 		Throw errorWrongParameter
 	}
 }
@@ -128,9 +128,9 @@ loadClipDataWithoutSaving(data, isFilePath = false){
 	
 	OnClipboardChange("saveClipb", 0)
 	
-	if(isFilePath){
+	if (isFilePath) {
 		readClipFromFile(data)
-	} else{
+	} else {
 		Clipboard := data
 	}
 	
@@ -142,7 +142,7 @@ loadClipDataWithoutSaving(data, isFilePath = false){
 waitForClipboard(dataToWaitFor = false){
 	global
 
-	if(dataToWaitFor == false)
+	if (dataToWaitFor == false)
 		dataToWaitFor := ClipboardAll
 	tmpTime := minwaitForClipboard + (StrLen(dataToWaitFor) / divisionalForClipboardWait)
 	sleep tmpTime
@@ -154,7 +154,7 @@ waitForClipboard(dataToWaitFor = false){
 saveClipb(clipTypeID){
 	global
 	
-	if(saveClipbRunning){
+	if (saveClipbRunning) {
 		return
 	}
 	saveClipbRunning := true
@@ -170,11 +170,11 @@ saveClipb(clipTypeID){
 	clipData := ClipboardAll
 	clipSize := StrLen(clipData)
 
-	if( (clipTypeID == 1) || (clipTypeID == 0) ){
+	if ( (clipTypeID == 1) || (clipTypeID == 0) ) {
 		; Clipboard data is either empty (0) or text (1)
 		clipType := clipTextExt
 	}
-	else if(clipTypeID == 2){
+	else if (clipTypeID == 2) {
 		; Set clipType based on it being a bitmap (2 ~ CF_BITMAP / image data) or not
 		clipType := DllCall("IsClipboardFormatAvailable", "Uint", 2) ? clipPicExt : clipBinExt
 	}
@@ -184,12 +184,12 @@ saveClipb(clipTypeID){
 	}
 
 	differentFromLastData := true
-	if(hasClipFiles() && clipType == prevClipType && clipSize == prevClipSize ){
+	if (hasClipFiles() && clipType == prevClipType && clipSize == prevClipSize ) {
 		if clipData = %prevClipData%
 			differentFromLastData := false
 	}
 	
-	if(differentFromLastData == true){
+	if (differentFromLastData == true) {
 		clipFile=%clipFile%.%clipType%
 
 		clipFiles.Push(clipFile)
@@ -213,14 +213,14 @@ saveClipb(clipTypeID){
 changeClip(place = "", force = false, showPreview = true){
 	global
 	
-	if(changeClipRunning){
+	if (changeClipRunning) {
 		return
 	}
 	changeClipRunning := true
 
 
-	if( !hasClipFiles() ){
-		if(showPreview){
+	if (!hasClipFiles()) {
+		if (showPreview) {
 			ToolTip % errorNoClipHistory
 		}
 
@@ -230,26 +230,26 @@ changeClip(place = "", force = false, showPreview = true){
 	
 	changed := false
 	
-	if( place == "+" ){
+	if ( place == "+" ) {
 		changed := setClipCursorPos(clipCursorPos +1, force)
-	} else if( place == "-" ){
+	} else if ( place == "-" ) {
 		changed := setClipCursorPos(clipCursorPos -1, force)
-	} else if(place == "" && force){
+	} else if (place == "" && force) {
 		changed := setClipCursorPos(clipCursorPos, force)
 	} else if place is Integer
 	{
 		changed := setClipCursorPos(place, force)
-		if( !changed && place != clipCursorPos){
+		if ( !changed && place != clipCursorPos) {
 			ToolTip % errorNoClipAtIndex
 			return
 		}
 	}
 	
-	if(changed){
+	if (changed) {
 		loadClipDataWithoutSaving(getClipFilePath(clipCursorPos), true)
 	}
 
-	if(showPreview){
+	if (showPreview) {
 		showClipPreview(clipCursorPos, clipType)
 	}
 
@@ -260,7 +260,7 @@ changeClip(place = "", force = false, showPreview = true){
 showClipPreview(tooltipHeader, cType){
 	global
 	
-	if(showClipPreviewRunning){
+	if (showClipPreviewRunning) {
 		return
 	}
 	showClipPreviewRunning := true
@@ -274,10 +274,10 @@ showClipPreview(tooltipHeader, cType){
 	; Variable to store preview text in
 	tooltipText := ""
 
-	if(cType == clipTextExt){
+	if (cType == clipTextExt) {
 		tooltipText := Clipboard
 	}
-	else if(cType == clipBinExt){
+	else if (cType == clipBinExt) {
 		; Read the binary file as raw, so it can be shown as text
 		FileRead, binClipContent, % getClipFilePath(clipCursorPos)
 		; Remove NUL characters from the binary data, to prevent AutoHotkey to truncate it
@@ -288,24 +288,24 @@ showClipPreview(tooltipHeader, cType){
 		tooltipText .= "Content:`n"
 		tooltipText .= noNulBinClipContent
 	}
-	else if(cType == clipPicExt){
+	else if (cType == clipPicExt) {
 		clipPicBitmap := Gdip_CreateBitmapFromClipboard()
 		
 		picW := Gdip_GetImageWidth(clipPicBitmap)
 		picH := Gdip_GetImageHeight(clipPicBitmap)
 
-		if( (picW*4 > A_ScreenWidth) || (picH*4 > A_ScreenHeight) ){
+		if ( (picW*4 > A_ScreenWidth) || (picH*4 > A_ScreenHeight) ) {
 			screenRatio := A_ScreenWidth / A_ScreenHeight
 			picRatio := picW / picH
 
-			if(picRatio > screenRatio)
+			if (picRatio > screenRatio)
 				scaleClipPic := A_ScreenWidth / picW / 4
 			else
 				scaleClipPic := A_ScreenWidth / picH / 4
 				
 			clipPicW := scaleClipPic * picW
 			clipPicH := scaleClipPic * picH
-		} else{
+		} else {
 			clipPicW := picW
 			clipPicH := picH
 		}
@@ -315,16 +315,16 @@ showClipPreview(tooltipHeader, cType){
 		Gdip_DrawImage(GDIP_Graphics, clipPicBitmap, GDIP_DesktopPos(xPos+16, "x"), GDIP_DesktopPos(yPos+16, "y"), clipPicW, clipPicH)
 		GDIP_Update()
 	}
-	else{
+	else {
 		tooltipText := errorNoSuchTypeStr
 	}
 
 	; Add header if provided
-	if(tooltipHeader != "")
+	if (tooltipHeader != "")
 		tooltipText := tooltipHeader . (tooltipText == "" ? "" : "`n" . tooltipText)
 
 	; Cut off the end of the tooltip text if it is too long
-	if(StrLen(tooltipText) > 1000)
+	if (StrLen(tooltipText) > 1000)
 		tooltipText := SubStr(tooltipText, 1 , 1000)
 	
 	ToolTip % tooltipText
@@ -336,13 +336,13 @@ showClipPreview(tooltipHeader, cType){
 instantPaste(place){
 	global
 	
-	if(instantPasteRunning){
+	if (instantPasteRunning) {
 		return
 	}
 	instantPasteRunning := true
 	
 
-	if(hasClipFile(place)){
+	if (hasClipFile(place)) {
 		clipSave := ClipboardAll
 		
 		loadClipDataWithoutSaving(clipLogDir . getClipFileName(place), true)
@@ -361,13 +361,13 @@ instantPaste(place){
 AddClipFromQuickClip(quickClipIndex){
 	global
 	
-	if(AddClipFromQuickClipRunning){
+	if (AddClipFromQuickClipRunning) {
 		return
 	}
 	AddClipFromQuickClipRunning := true
 
 
-	if(!quickClipExists(quickClipIndex)){
+	if (!quickClipExists(quickClipIndex)) {
 		ToolTip % errorNoClipAtIndex . " (" . getQuickClipCurrentSlotString(quickClipIndex) . ")"
 		return
 	}
@@ -385,14 +385,14 @@ AddClipFromQuickClip(quickClipIndex){
 deleteClip(place = "", maintainCursorPos = false){
 	global
 	
-	if(deleteClipRunning){
+	if (deleteClipRunning) {
 		return
 	}
 	deleteClipRunning := true
 
 	
 	placeToDelete := calcPlace(place)
-	if(!hasClipFile(placeToDelete)){
+	if (!hasClipFile(placeToDelete)) {
 		ToolTip % errorNoClipAtIndex . " (" . place . ")"
 		return
 	}
@@ -404,19 +404,19 @@ deleteClip(place = "", maintainCursorPos = false){
 	deletedClipText := "Deleted clip: " . placeToDelete
 	
 	placeToMove := clipCursorPos
-	if(placeToDelete <= clipCursorPos){
-		if(maintainCursorPos){
-			if(!hasClipFile(placeToMove))
+	if (placeToDelete <= clipCursorPos) {
+		if (maintainCursorPos) {
+			if (!hasClipFile(placeToMove))
 				placeToMove--
-		} else{
+		} else {
 			placeToMove--
-			if(!hasClipFile(placeToMove))
+			if (!hasClipFile(placeToMove))
 				placeToMove++
 		}
 
-		if(hasClipFile(placeToMove)){
+		if (hasClipFile(placeToMove)) {
 			changeClip(placeToMove, true, false)
-		} else{
+		} else {
 			loadClipDataWithoutSaving("")
 
 			Tooltip % deletedClipText . "`nNo clip is left to change to"
@@ -435,14 +435,14 @@ deleteClip(place = "", maintainCursorPos = false){
 setQuickClipTable(place := ""){
 	global
 
-	if(place == ""){
-		if(customQuickClipTableIsUsed){
+	if (place == "") {
+		if (customQuickClipTableIsUsed) {
 			customQuickClipTablePos := Mod(customQuickClipTablePos, customQuickClipTableList.MaxIndex()) + 1
 		} else {
 			customQuickClipTableIsUsed := true
 			customQuickClipTablePos := 1
 		}
-	} else{
+	} else {
 		customQuickClipTableIsUsed := false
 		customQuickClipTablePos := place
 	}
@@ -453,23 +453,23 @@ setQuickClipTable(place := ""){
 setQuickClip(place, dataToUse = false){
 	global
 	
-	if(setQuickClipRunning){
+	if (setQuickClipRunning) {
 		return
 	}
 	setQuickClipRunning := true
 
 
-	if(!hasClipFiles() && dataToUse == false){
+	if (!hasClipFiles() && dataToUse == false) {
 		ToolTip % errorCantSetQSlot . " (" . getQuickClipCurrentSlotString(place) . ")`n" . errorNoClipHistory
 
 		setQuickClipRunning := false
 		return
 	}
 
-	if(quickClipExists(place))
+	if (quickClipExists(place))
 		FileDelete, % quickClipLogDir . getCurrentCustomQuickClipBase() . place ".*"
 
-	if(dataToUse == false){
+	if (dataToUse == false) {
 		sourceFile := getClipFilePath(clipCursorPos)
 		destinationFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place . "." . clipType
 		
@@ -477,7 +477,7 @@ setQuickClip(place, dataToUse = false){
 		
 		previewHeader = %notifySavedQSlot% %place%
 		showClipPreview(previewHeader, clipType)
-	} else{
+	} else {
 		destinationFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place . "." . clipTextExt
 
 		clipSave := ClipboardAll
@@ -493,7 +493,7 @@ setQuickClip(place, dataToUse = false){
 peekQuickClip(place, customHeader = ""){
 	global
 	
-	if(peekQuickClipRunning){
+	if (peekQuickClipRunning) {
 		return
 	}
 	peekQuickClipRunning := true
@@ -501,20 +501,20 @@ peekQuickClip(place, customHeader = ""){
 	
 	GDIP_StartDraw()
 
-	if(quickClipExists(place)){
+	if (quickClipExists(place)) {
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
 		loadClipDataWithoutSaving(quickClipPath, true)
 
 		previewHeader := getQuickClipCurrentSlotString(place)
-		if(customHeader != "")
+		if (customHeader != "")
 			previewHeader := customHeader
 		showClipPreview(previewHeader, getExtension(quickClipPath))
 
 		loadClipDataWithoutSaving(clipSave)
 	}
-	else{
+	else {
 		GDIP_Clean()
 		GDIP_Update()
 		ToolTip % getQuickClipCurrentSlotString(place) . "`n" . errorNoClipAtIndex
@@ -527,13 +527,13 @@ peekQuickClip(place, customHeader = ""){
 pasteQuickClip(place){
 	global
 	
-	if(pasteQuickClipRunning){
+	if (pasteQuickClipRunning) {
 		return
 	}
 	pasteQuickClipRunning := true
 	
 
-	if(quickClipExists(place)){
+	if (quickClipExists(place)) {
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
@@ -553,13 +553,13 @@ pasteQuickClip(place){
 deleteQuickClip(place){
 	global
 	
-	if(deleteQuickClipRunning){
+	if (deleteQuickClipRunning) {
 		return
 	}
 	deleteQuickClipRunning := true
 
 
-	if(quickClipExists(place)){
+	if (quickClipExists(place)) {
 		FileDelete, % quickClipLogDir . getCurrentCustomQuickClipBase() . place . ".*"
 		
 		ToolTip % notifyDelQSlot . " " . getQuickClipCurrentSlotString(place)

@@ -6,7 +6,7 @@
 	Alt Up::
 	LWin Up::
 	setStateReady:
-		if(GDIP_IsDrawing){
+		if (GDIP_IsDrawing) {
 			GDIP_Clean()
 			GDIP_Update()
 			GDIP_EndDraw()
@@ -27,7 +27,7 @@
 		isLogging := !isLogging
 		clipMode := [clipModePaused, clipModeNone][isLogging + 1]
 		
-		if(isLogging){
+		if (isLogging) {
 			Clipboard := ""
 			changeClip("", true, false)
 		}

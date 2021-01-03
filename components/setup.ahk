@@ -123,7 +123,7 @@ return
 ReadConfigFile:
 
 	; Create config if necessary
-	if(!FileExist(iniFilePath)){
+	if (!FileExist(iniFilePath)) {
     	FileAppend, [settings]`n, %iniFilePath%
 	}
 

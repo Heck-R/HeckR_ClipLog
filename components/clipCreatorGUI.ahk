@@ -10,7 +10,7 @@ showClipCreatorGUI(createAsQuickClip = false){
     Gui Add, Edit, hWndhEdtValue x8 y24 w224 h108 vEditContent -Wrap
     Gui Add, Button, hWndhBtnOk x8 y144 w80 h24 gOkClick, OK
     Gui Add, Button, hWndhBtnCancel x96 y144 w80 h24 gCancelClick, Cancel
-    if(createAsQuickClip){
+    if (createAsQuickClip) {
         Gui Font, s10
         Gui Add, DropDownList, hWndhDDLItems x200 y144 w32 vQuickClipSlot, 0||1|2|3|4|5|6|7|8|9
         Gui Font
@@ -20,7 +20,7 @@ showClipCreatorGUI(createAsQuickClip = false){
     Return
 
     GuiSize:
-        If (A_EventInfo == 1) {
+        if (A_EventInfo == 1) {
             Return
         }
 
@@ -29,7 +29,7 @@ showClipCreatorGUI(createAsQuickClip = false){
         AutoXYWH("y", hBtnOk)
         AutoXYWH("y", hBtnCancel)
 
-        if(createAsQuickClip)
+        if (createAsQuickClip)
             AutoXYWH("xy", hDDLItems)
     Return
 
@@ -40,7 +40,7 @@ showClipCreatorGUI(createAsQuickClip = false){
         if QuickClipSlot is Integer
         {
             setQuickClip(QuickClipSlot, EditContent)
-        } else{
+        } else {
             Clipboard := EditContent
         }
         
