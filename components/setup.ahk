@@ -12,6 +12,8 @@ SetupClipLog:
 
 	gosub SetupClipLogGlobalVariables
 
+	gosub ReadConfigFile
+
 	gosub SetupClipLogDirectories
 
 	gosub SetupClipLogFileLists
@@ -46,6 +48,9 @@ SetupClipLogFinalValues:
 	clipLogDir=%logDir%clipLogDir\				;Standard clip log directory
 	quickClipLogDir=%logDir%quickClipLogDir\	;Quick clip logging directory 
 
+	; Config/Ini file
+	iniFilePath := regexreplace(A_ScriptFullPath, "\.[^.]+$",".ini")
+
 	; Clip types
 	clipTextExt := "clog"	;Text
 	clipPicExt := "plog"	;Picture/Image/Bitmap
@@ -54,6 +59,7 @@ SetupClipLogFinalValues:
 
 	; Clip modes
 	clipModeNone := "none"
+	clipModeSetting := "setting"
 	clipModePreview := "preview"
 	clipModePaste := "paste"
 	clipModeAdd := "add"
@@ -102,8 +108,10 @@ SetupClipLogGlobalVariables:
 	prevClipType := ""		;Previous clip type for avoiding duplications
 	prevClipSize := 0		;Previous clip type for avoiding duplications
 
-	clipFiles := []							;List of standard clip log files
-	quickClipFiles := []					;List of quick clip log files
+	clipFiles := []				;List of standard clip log files
+	customQuickClipTableList := []			;Custom quick clip table IDs/names
+	customQuickClipTablePos := 1			;Selected custom quickclip table's number/position (either an index from the custom tables list, or an indexed table. See variable: customQuickClipTableIsUsed)
+	customQuickClipTableIsUsed := true		;Flag indicating the meaning of customQuickClipTablePos. true => index, false => table name
 
 	isLogging := true						;Flag for enabling/disabling hotkeys
 	scriptIsModifyingClipboard := false		;Flag for making sure only one thing is trying to modify the cliboard
@@ -112,29 +120,53 @@ return
 
 ;------------------------------------------------
 
-SetupClipLogFileLists:
+ReadConfigFile:
 
-	;Reading clips
-	Loop, Files, %clipLogDir%*.?log
-	{
-		clipFiles.Push(A_LoopFileName)
+	; Create config if necessary
+	if(!FileExist(iniFilePath)){
+    	FileAppend, [settings]`n, %iniFilePath%
 	}
 
-	; Reading quick clips
-	Loop, 10 {
-		quickClipFiles[A_Index] := false
-	}
-	Loop, Files, %quickClipLogDir%*.?log
-	{
-		tmpFileName := StrSplit(A_LoopFileName, ".")[1]
-		quickClipFiles[tmpFileName] := true
-	}
+	; Init quick clip list names
+	IniRead, customQuickClipTableListString, %iniFilePath%, settings, customQuickClipTables, %A_Space%
+	customQuickClipTableList := StrSplit(customQuickClipTableListString, ",", " `t")
+
+	; Always start with default
+	customQuickClipTableList.InsertAt(1, "default")
 
 return
 
 ;------------------------------------------------
 
+SetupClipLogFileLists:
+
+	gosub SetupStandardClipLogFileList
+
+return
+
+SetupStandardClipLogFileList:
+	Loop, Files, %clipLogDir%*.?log
+	{
+		clipFiles.Push(A_LoopFileName)
+	}
+return
+
+DeleteQuickClipsOfNonexistentTables:
+	fileStartingOptions := join("|", customQuickClipTableList*)
+	fileMatchPattern := "^(\d|" . fileStartingOptions . ")(\d)\.(.log)$"
+	
+	Loop, Files, %quickClipLogDir%*
+	{
+		if (RegExMatch(A_LoopFileName, fileMatchPattern, matchObject) == 0)
+			FileDelete, %A_LoopFileFullPath%
+	}
+return
+
+;------------------------------------------------
+
 SetupClipLogInit:
+
+	gosub DeleteQuickClipsOfNonexistentTables
 
     deleteOldLogFiles()
 

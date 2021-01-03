@@ -86,10 +86,27 @@ getUniqueFileExtension(extLessFileWithPath){
 	}
 }
 
+getCurrentCustomQuickClipBase() {
+	global
+	return customQuickClipTableIsUsed ? customQuickClipTableList[customQuickClipTablePos] : customQuickClipTablePos
+}
+
+getQuickClipCurrentSlotString(index){
+	global
+	return getCurrentCustomQuickClipBase() . " - " . index
+}
+
+quickClipExists(index){
+	global
+
+	fileAttributes := FileExist(quickClipLogDir . getCurrentCustomQuickClipBase() . index . ".?log")
+	return (fileAttributes != "")
+}
+
 getFullPathOfQuickClip(place){
 	global
 
-	quickClipFile := quickClipLogDir . place
+	quickClipFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place
 	quickClipType := getUniqueFileExtension(quickClipFile)
 
 	return quickClipFile . "." . quickClipType
@@ -203,8 +220,10 @@ changeClip(place = "", force = false, showPreview = true){
 
 
 	if( !hasClipFiles() ){
-		ToolTip, %errorNoClipHistory%
-		
+		if(showPreview){
+			ToolTip % errorNoClipHistory
+		}
+
 		changeClipRunning := false
 		return
 	}
@@ -221,7 +240,7 @@ changeClip(place = "", force = false, showPreview = true){
 	{
 		changed := setClipCursorPos(place, force)
 		if( !changed && place != clipCursorPos){
-			ToolTip, %errorNoClipAtIndex%
+			ToolTip % errorNoClipAtIndex
 			return
 		}
 	}
@@ -348,8 +367,8 @@ AddClipFromQuickClip(quickClipIndex){
 	AddClipFromQuickClipRunning := true
 
 
-	if(!quickClipFiles[quickClipIndex]){
-		ToolTip, %errorNoClipAtIndex%
+	if(!quickClipExists(quickClipIndex)){
+		ToolTip % errorNoClipAtIndex . " (" . getQuickClipCurrentSlotString(quickClipIndex) . ")"
 		return
 	}
 
@@ -374,7 +393,7 @@ deleteClip(place = "", maintainCursorPos = false){
 	
 	placeToDelete := calcPlace(place)
 	if(!hasClipFile(placeToDelete)){
-		ToolTip, %errorNoClipAtIndex%
+		ToolTip % errorNoClipAtIndex . " (" . place . ")"
 		return
 	}
 
@@ -413,6 +432,24 @@ deleteClip(place = "", maintainCursorPos = false){
 
 ;--------------------------------------------------------------------------------------------------
 
+setQuickClipTable(place := ""){
+	global
+
+	if(place == ""){
+		if(customQuickClipTableIsUsed){
+			customQuickClipTablePos := Mod(customQuickClipTablePos, customQuickClipTableList.MaxIndex()) + 1
+		} else {
+			customQuickClipTableIsUsed := true
+			customQuickClipTablePos := 1
+		}
+	} else{
+		customQuickClipTableIsUsed := false
+		customQuickClipTablePos := place
+	}
+
+	ToolTip % "Quick clip table: " . getCurrentCustomQuickClipBase()
+}
+
 setQuickClip(place, dataToUse = false){
 	global
 	
@@ -423,27 +460,25 @@ setQuickClip(place, dataToUse = false){
 
 
 	if(!hasClipFiles() && dataToUse == false){
-		ToolTip, %errorCantSetQSlot% %place%`n%errorNoClipHistory%
+		ToolTip % errorCantSetQSlot . " (" . getQuickClipCurrentSlotString(place) . ")`n" . errorNoClipHistory
 
 		setQuickClipRunning := false
 		return
 	}
 
-	if(quickClipFiles[place])
-		FileDelete, %quickClipLogDir%%place%.*
-	else
-		quickClipFiles[place] := true
+	if(quickClipExists(place))
+		FileDelete, % quickClipLogDir . getCurrentCustomQuickClipBase() . place ".*"
 
 	if(dataToUse == false){
 		sourceFile := getClipFilePath(clipCursorPos)
-		destinationFile := quickClipLogDir . place . "." . clipType
+		destinationFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place . "." . clipType
 		
 		FileCopy, %sourceFile%, %destinationFile%, 1
 		
 		previewHeader = %notifySavedQSlot% %place%
 		showClipPreview(previewHeader, clipType)
 	} else{
-		destinationFile := quickClipLogDir . place . "." . clipTextExt
+		destinationFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place . "." . clipTextExt
 
 		clipSave := ClipboardAll
 		Clipboard := dataToUse
@@ -466,13 +501,13 @@ peekQuickClip(place, customHeader = ""){
 	
 	GDIP_StartDraw()
 
-	if(quickClipFiles[place]){
+	if(quickClipExists(place)){
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
 		loadClipDataWithoutSaving(quickClipPath, true)
 
-		previewHeader := place
+		previewHeader := getQuickClipCurrentSlotString(place)
 		if(customHeader != "")
 			previewHeader := customHeader
 		showClipPreview(previewHeader, getExtension(quickClipPath))
@@ -482,7 +517,7 @@ peekQuickClip(place, customHeader = ""){
 	else{
 		GDIP_Clean()
 		GDIP_Update()
-		ToolTip, %place%`n%errorNoClipAtIndex%
+		ToolTip % getQuickClipCurrentSlotString(place) . "`n" . errorNoClipAtIndex
 	}
 
 
@@ -498,7 +533,7 @@ pasteQuickClip(place){
 	pasteQuickClipRunning := true
 	
 
-	if(quickClipFiles[place]){
+	if(quickClipExists(place)){
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
@@ -524,11 +559,10 @@ deleteQuickClip(place){
 	deleteQuickClipRunning := true
 
 
-	if(quickClipFiles[place]){
-		FileDelete, %quickClipLogDir%%place%.*
-		quickClipFiles[place] := false
+	if(quickClipExists(place)){
+		FileDelete, % quickClipLogDir . getCurrentCustomQuickClipBase() . place . ".*"
 		
-		ToolTip, %notifyDelQSlot% %place%
+		ToolTip % notifyDelQSlot . " " . getQuickClipCurrentSlotString(place)
 	}
 
 	
