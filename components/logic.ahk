@@ -458,6 +458,8 @@ setQuickClip(place, dataToUse = false) {
 	}
 	setQuickClipRunning := true
 
+	; Making sure, the clip is loaded
+	changeClip("", true, false)
 
 	if (!hasClipFiles() && dataToUse == false) {
 		ToolTip % errorCantSetQSlot . " (" . getQuickClipCurrentSlotString(place) . ")`n" . errorNoClipHistory
