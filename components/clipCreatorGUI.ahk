@@ -1,5 +1,5 @@
 
-showClipCreatorGUI(createAsQuickClip = false){
+showClipCreatorGUI(createAsQuickClip = false) {
     global
 
     Gui New

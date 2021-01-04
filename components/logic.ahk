@@ -1,5 +1,5 @@
 
-deleteOldLogFiles(){
+deleteOldLogFiles() {
 	global
 
     oldLogFileNum := clipFiles.count() - maxClipFileNum
@@ -20,32 +20,32 @@ deleteOldLogFiles(){
 
 ;-------------------------------------------------------
 
-deleteClipFileName(place){
+deleteClipFileName(place) {
 	global
 	return clipFiles.removeAt(clipFiles.count() - place)
 }
 
-getClipFileName(place){
+getClipFileName(place) {
 	global
 	return clipFiles[clipFiles.count() - place]
 }
 
-getClipFilePath(place){
+getClipFilePath(place) {
 	global
 	return clipLogDir . getClipFileName(place)
 }
 
-hasClipFiles(){
+hasClipFiles() {
 	global
 	return (clipFiles.count() != 0)
 }
 
-hasClipFile(index){
+hasClipFile(index) {
 	global
 	return (index >= 0 && index < clipFiles.count() && index < maxClipFileNum)
 }
 
-setClipCursorPos(index, new := false){
+setClipCursorPos(index, new := false) {
 	global
 	
 	if ((index != clipCursorPos || new == true) && hasClipFile(index)) {
@@ -57,7 +57,7 @@ setClipCursorPos(index, new := false){
 	}
 }
 
-calcPlace(place = ""){
+calcPlace(place = "") {
 	global
 	
 	if (place == "") {
@@ -74,12 +74,12 @@ calcPlace(place = ""){
 	}
 }
 
-getExtension(fileName){
+getExtension(fileName) {
 	fileNameArr := StrSplit(fileName, ".")
 	return fileNameArr[fileNameArr.MaxIndex()]
 }
 
-getUniqueFileExtension(extLessFileWithPath){
+getUniqueFileExtension(extLessFileWithPath) {
 	Loop, Files, %extLessFileWithPath%.*
 	{
 		return getExtension(A_LoopFileName)
@@ -91,19 +91,19 @@ getCurrentCustomQuickClipBase() {
 	return customQuickClipTableIsUsed ? customQuickClipTableList[customQuickClipTablePos] : customQuickClipTablePos
 }
 
-getQuickClipCurrentSlotString(index){
+getQuickClipCurrentSlotString(index) {
 	global
 	return getCurrentCustomQuickClipBase() . " - " . index
 }
 
-quickClipExists(index){
+quickClipExists(index) {
 	global
 
 	fileAttributes := FileExist(quickClipLogDir . getCurrentCustomQuickClipBase() . index . ".?log")
 	return (fileAttributes != "")
 }
 
-getFullPathOfQuickClip(place){
+getFullPathOfQuickClip(place) {
 	global
 
 	quickClipFile := quickClipLogDir . getCurrentCustomQuickClipBase() . place
@@ -112,7 +112,7 @@ getFullPathOfQuickClip(place){
 	return quickClipFile . "." . quickClipType
 }
 
-readClipFromFile(filePathToRead){
+readClipFromFile(filePathToRead) {
 	global
 
 	try {
@@ -123,7 +123,7 @@ readClipFromFile(filePathToRead){
 	}
 }
 
-loadClipDataWithoutSaving(data, isFilePath = false){
+loadClipDataWithoutSaving(data, isFilePath = false) {
 	global
 	
 	OnClipboardChange("saveClipb", 0)
@@ -139,7 +139,7 @@ loadClipDataWithoutSaving(data, isFilePath = false){
 
 ;------------------------------------------------
 
-waitForClipboard(dataToWaitFor = false){
+waitForClipboard(dataToWaitFor = false) {
 	global
 
 	if (dataToWaitFor == false)
@@ -151,7 +151,7 @@ waitForClipboard(dataToWaitFor = false){
 ;--------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------
 
-saveClipb(clipTypeID){
+saveClipb(clipTypeID) {
 	global
 	
 	if (saveClipbRunning) {
@@ -210,7 +210,7 @@ saveClipb(clipTypeID){
 
 ;--------------------------------------------------------------------------------------------------
 
-changeClip(place = "", force = false, showPreview = true){
+changeClip(place = "", force = false, showPreview = true) {
 	global
 	
 	if (changeClipRunning) {
@@ -237,7 +237,7 @@ changeClip(place = "", force = false, showPreview = true){
 	} else if (place == "" && force) {
 		changed := setClipCursorPos(clipCursorPos, force)
 	} else if place is Integer
-	{
+	 {
 		changed := setClipCursorPos(place, force)
 		if ( !changed && place != clipCursorPos) {
 			ToolTip % errorNoClipAtIndex
@@ -257,7 +257,7 @@ changeClip(place = "", force = false, showPreview = true){
 	changeClipRunning := false
 }
 
-showClipPreview(tooltipHeader, cType){
+showClipPreview(tooltipHeader, cType) {
 	global
 	
 	if (showClipPreviewRunning) {
@@ -333,7 +333,7 @@ showClipPreview(tooltipHeader, cType){
 	showClipPreviewRunning := false
 }
 
-instantPaste(place){
+instantPaste(place) {
 	global
 	
 	if (instantPasteRunning) {
@@ -358,7 +358,7 @@ instantPaste(place){
 	instantPasteRunning := false
 }
 
-AddClipFromQuickClip(quickClipIndex){
+AddClipFromQuickClip(quickClipIndex) {
 	global
 	
 	if (AddClipFromQuickClipRunning) {
@@ -382,7 +382,7 @@ AddClipFromQuickClip(quickClipIndex){
 	AddClipFromQuickClipRunning := false
 }
 
-deleteClip(place = "", maintainCursorPos = false){
+deleteClip(place = "", maintainCursorPos = false) {
 	global
 	
 	if (deleteClipRunning) {
@@ -432,7 +432,7 @@ deleteClip(place = "", maintainCursorPos = false){
 
 ;--------------------------------------------------------------------------------------------------
 
-setQuickClipTable(place := ""){
+setQuickClipTable(place := "") {
 	global
 
 	if (place == "") {
@@ -450,7 +450,7 @@ setQuickClipTable(place := ""){
 	ToolTip % "Quick clip table: " . getCurrentCustomQuickClipBase()
 }
 
-setQuickClip(place, dataToUse = false){
+setQuickClip(place, dataToUse = false) {
 	global
 	
 	if (setQuickClipRunning) {
@@ -490,7 +490,7 @@ setQuickClip(place, dataToUse = false){
 	setQuickClipRunning := false
 }
 
-peekQuickClip(place, customHeader = ""){
+peekQuickClip(place, customHeader = "") {
 	global
 	
 	if (peekQuickClipRunning) {
@@ -524,7 +524,7 @@ peekQuickClip(place, customHeader = ""){
 	peekQuickClipRunning := false
 }
 
-pasteQuickClip(place){
+pasteQuickClip(place) {
 	global
 	
 	if (pasteQuickClipRunning) {
@@ -550,7 +550,7 @@ pasteQuickClip(place){
 	pasteQuickClipRunning := false
 }
 
-deleteQuickClip(place){
+deleteQuickClip(place) {
 	global
 	
 	if (deleteQuickClipRunning) {
