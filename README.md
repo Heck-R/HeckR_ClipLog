@@ -68,8 +68,8 @@ There are 2 types of quick clip tables:
 
 ### Hotkeys
 
-- **Shift + Ctrl + \<Any number\>**: Change to the associated quick clip table
-- **Shift + Ctrl + Tab**: Step through the named quick clip tables (for details, see the `customQuickClipTables` key under the [Settings](#Settings))
+- **Shift + Alt + \<Any number\>**: Change to the associated quick clip table
+- **Shift + Alt + Tab**: Step through the named quick clip tables (for details, see the `customQuickClipTables` key under the [Settings](#Settings))
 - **Win + Shift + Ctrl + \<Any number\>**: Save the current clipboard data to the quick clip at the position of the number you pressed
 - **Win + Shift + Ctrl + Enter**: A small window pops up, where you can enter some text you wish to save to one of the quickClip slots. You can select the quickClip slot by selecting a number in the dropdown list at the bottom right (0 by default). If you press the OK button, the text will be saved to the selected quickClip slot. (Note, that there is no autosave, thus the content inside the windows will only be saved if you press the OK button)
 - **Win + Shift + Ctrl + Alt + \<Any number\>**: Delete the clipboard data to the the quick clip at the position of the number you pressed ([note](#Microsoft's-Office-hotkey-interference))
