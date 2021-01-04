@@ -90,6 +90,7 @@ SetupClipLogFinalValues:
 	warningBinClipType := "The clip is of an unknown binary type / clipboard format`nIt may not display correctly"
 
 	notifyDelQSlot := "Deleted quick slot"
+	notifyNoDelQSlot := "Nothing to delete at quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
 	notifySavedHSlot := "Clip saved to the history"
 

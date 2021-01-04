@@ -564,7 +564,9 @@ deleteQuickClip(place) {
 	if (quickClipExists(place)) {
 		FileDelete, % quickClipLogDir . getCurrentCustomQuickClipBase() . place . ".*"
 		
-		ToolTip % notifyDelQSlot . " " . getQuickClipCurrentSlotString(place)
+		ToolTip % notifyDelQSlot . ": " . getQuickClipCurrentSlotString(place)
+	} else {
+		ToolTip % notifyNoDelQSlot . ": " . getQuickClipCurrentSlotString(place)
 	}
 
 	
