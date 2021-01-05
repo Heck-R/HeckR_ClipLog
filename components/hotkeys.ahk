@@ -47,6 +47,20 @@
 
 #if
 
+;------------------------------------------------
+
+#if (clipMode == clipModeNone) or (clipMode == clipModeHelp)
+
+	#H::
+		clipMode := clipModeHelp
+
+		CoordMode, ToolTip, Screen
+		ToolTip, %hotkeyHelpText%, 0, 0
+		CoordMode, ToolTip, Relative
+	return
+
+#if
+
 ;--------------------------------------------------------------------------------------------------
 ;--------------------------------------------------------------------------------------------------
 

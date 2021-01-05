@@ -81,6 +81,7 @@ There are 2 types of quick clip tables:
 ### Hotkeys
 
 - **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionallities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
+- **Win + H**: Shows a helping tooltip about all of the availbale hotkeys
 
 # Settings
 

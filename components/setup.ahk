@@ -12,6 +12,8 @@ SetupClipLog:
 
 	gosub SetupClipLogGlobalVariables
 
+	gosub PrepareHelpText
+
 	gosub ReadConfigFile
 
 	gosub SetupClipLogDirectories
@@ -59,6 +61,7 @@ SetupClipLogFinalValues:
 
 	; Clip modes
 	clipModeNone := "none"
+	clipModeHelp := "help"
 	clipModeSetting := "setting"
 	clipModePreview := "preview"
 	clipModePaste := "paste"
@@ -93,6 +96,62 @@ SetupClipLogFinalValues:
 	notifyNoDelQSlot := "Nothing to delete at quick slot"
 	notifySavedQSlot := "Clip saved to quick slot"
 	notifySavedHSlot := "Clip saved to the history"
+
+	; Help text
+	; Helping regex replace: "- \*\*(.*)\*\*: ?(.*[^ ])" => "hotkeyHelpData["history"].Push(["$1", "$2"])"
+	hotkeyHelpData := {}
+
+	hotkeyHelpData["0_General"] := []
+	hotkeyHelpData["1_StandardClip"] := []
+	hotkeyHelpData["2_QuickClip"] := []
+
+	hotkeyHelpData["0_General"].Push(["Win + Shift + L", "Turns on/off the logging of the clipboard and the other hotkeys of this script"])
+	hotkeyHelpData["0_General"].Push(["Win + H", "Shows a helping tooltip about all of the availbale hotkeys"])
+
+	hotkeyHelpData["1_StandardClip"].Push(["Win + (LeftArrow / LeftClick / MouseForward / ScrollDown)", "Go one position back in the history"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + (RightArrow / RightClick / MouseBackward / ScrollUp)", "Go one position forward in the history"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + (UpArrow / DownArrow / MiddleMouseButton)", "Only show the preview of the current clip"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + <Any number>", "Go to the clip with the number pressed"])
+	hotkeyHelpData["1_StandardClip"].Push("")
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Alt + <Any number>", "Instantly paste the clip from the history without changing the content on the clipboard"])
+	hotkeyHelpData["1_StandardClip"].Push("")
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + Enter", "A small window pops up, where you can enter some text you wish to save to the history"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + <Any number>", "Add the quickClip indexed with the pressed number (if it exists) to the history and put it on the clipboard"])
+	hotkeyHelpData["1_StandardClip"].Push("")
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + Alt + (LeftArrow / LeftClick / MouseForward)", "Delete the older neighbour of the currently selected clip (if it exists)"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + Alt + (RightArrow / RightClick / MouseBackward)", "Delete the younger neighbour of the currently selected clip (if it exists)"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + Alt + (DownArrow / UpArrow / MiddleMouseButton)", "Delete the currently selected clip (if there is one selected)"])
+	hotkeyHelpData["1_StandardClip"].Push(["Win + Shift + Alt + <Any number>", "Delete the clip with the same index as the number which is being pressed (if it exists)"])
+
+	hotkeyHelpData["2_QuickClip"].Push(["Shift + Alt + <Any number>", "Change to the associated quick clip table"])
+	hotkeyHelpData["2_QuickClip"].Push(["Shift + Alt + Tab", "Step through the named quick clip tables"])
+	hotkeyHelpData["2_QuickClip"].Push("")
+	hotkeyHelpData["2_QuickClip"].Push(["Win + Shift + Ctrl + <Any number>", "Save the current clipboard data to the quick clip at the position of the number you pressed"])
+	hotkeyHelpData["2_QuickClip"].Push(["Win + Shift + Ctrl + Enter", "A small window pops up, where you can enter some text you wish to save to one of the quickClip slots"])
+	hotkeyHelpData["2_QuickClip"].Push(["Win + Shift + Ctrl + Alt + <Any number>", "Delete the clipboard data to the the quick clip at the position of the number you pressed"])
+	hotkeyHelpData["2_QuickClip"].Push(["Win + Ctrl + <Any number>", "Open a preview of the quock clip at the position of the number you pressed"])
+	hotkeyHelpData["2_QuickClip"].Push(["Win + Ctrl + Alt + <Any number>", "Instant paste the quck clip at the position of the number you pressed"])
+return
+
+PrepareHelpText:
+
+	hotkeyHelpText := "Hotkey help"
+
+	for category, data in hotkeyHelpData {
+		hotkeyHelpText .= "`n`n"
+		hotkeyHelpText .= category . ":"
+
+		for index, textArr in data {
+			hotkeyHelpText .= "`n"
+
+			if (!IsObject(textArr)) {
+				continue
+			}
+
+			hotkeyHelpText .= "- "
+			hotkeyHelpText .= textArr[1] . ": " . textArr[2]
+		}
+	}
 
 return
 
