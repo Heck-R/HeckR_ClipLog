@@ -197,10 +197,11 @@ ReadConfigFile:
 	; Read custom history size
 	IniRead, maxNumberOfClipFilesIniValue, %iniFilePath%, settings, maxNumberOfClipFiles, %A_Space%
 	if (maxNumberOfClipFilesIniValue != "") {
-		if maxNumberOfClipFilesIniValue is Integer {
+		if maxNumberOfClipFilesIniValue is Integer
+		{
 			maxClipFileNum := maxNumberOfClipFilesIniValue
 		} else {
-			MsgBox % errorWrongConfigValue . "`nValue of 'maxNumberOfClipFiles' must be an integer, but it was '" . maxClipFileNum . "'`n`nThe program terminates..."
+			MsgBox % errorWrongConfigValue . "`nValue of 'maxNumberOfClipFiles' must be an integer, but it was '" . maxNumberOfClipFilesIniValue . "'`n`nThe program terminates..."
 			ExitApp
 		}
 	}
