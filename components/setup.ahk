@@ -77,7 +77,7 @@ SetupClipLogFinalValues:
 	minwaitForClipboard := 50
 	sleepTimeBeforeSaveClip := 100
 	divisionalForClipboardWait := 20000
-    maxClipFileNum := 1000
+    maxClipFileNum := 1000		; How many clips are preserved at most (read from config)
 
 	; Messages
     errorCantReadClipFile := "Can't read the file for some reason`nIn order to avoid further problems the file gets deleted and the script restarts"
@@ -88,6 +88,7 @@ SetupClipLogFinalValues:
 	errorNoClipHistory := "The clipboard history is empty"
 	errorNoSuchTypeStr := "The file is of an unkown type"
 	errorTypeStr := "Corrupt file`nCan't determine the type of the data"
+	errorWrongConfigValue := "The provided value in the configuration file is not formatted properly"
 	errorWrongParameter := "The passed parameter is not valid"
 	
 	warningBinClipType := "The clip is of an unknown binary type / clipboard format`nIt may not display correctly"
@@ -190,10 +191,20 @@ ReadConfigFile:
 	; Init quick clip list names
 	IniRead, customQuickClipTableListString, %iniFilePath%, settings, customQuickClipTables, %A_Space%
 	customQuickClipTableList := StrSplit(customQuickClipTableListString, ",", " `t")
-
 	; Always start with default
 	customQuickClipTableList.InsertAt(1, "default")
 
+	; Read custom history size
+	IniRead, maxNumberOfClipFilesIniValue, %iniFilePath%, settings, maxNumberOfClipFiles, %A_Space%
+	if (maxNumberOfClipFilesIniValue != "") {
+		if maxNumberOfClipFilesIniValue is Integer {
+			maxClipFileNum := maxNumberOfClipFilesIniValue
+		} else {
+			MsgBox % errorWrongConfigValue . "`nValue of 'maxNumberOfClipFiles' must be an integer, but it was '" . maxClipFileNum . "'`n`nThe program terminates..."
+			ExitApp
+		}
+	}
+	
 return
 
 ;------------------------------------------------
