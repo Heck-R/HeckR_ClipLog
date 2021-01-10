@@ -170,7 +170,7 @@ SetupClipLogGlobalVariables:
 	prevClipSize := 0		;Previous clip type for avoiding duplications
 
 	clipFiles := []				;List of standard clip log files
-	customQuickClipTableList := []			;Custom quick clip table IDs/names
+	customQuickClipTableList := []			;Custom quick clip table IDs/names (read from config)
 	customQuickClipTablePos := 1			;Selected custom quickclip table's number/position (either an index from the custom tables list, or an indexed table. See variable: customQuickClipTableIsUsed)
 	customQuickClipTableIsUsed := true		;Flag indicating the meaning of customQuickClipTablePos. true => index, false => table name
 
