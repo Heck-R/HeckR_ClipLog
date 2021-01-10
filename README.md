@@ -95,6 +95,11 @@ While it is not necessary to configure anything for the script to be functional,
 
 ## Keys
 
+- **maxNumberOfClipFiles**  \
+  *Description*: The maximum number of clip files to store in the history  \
+  *Format*: `Integer`  \
+  *Default*: `1000`
+
 - **customQuickClipTables**  \
   *Description*: A list of custom quick clip table names to be available  \
   *Format*: A comma separated string  \
