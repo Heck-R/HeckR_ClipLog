@@ -12,7 +12,6 @@
 			GDIP_EndDraw()
 		}
 
-		scriptIsModifyingClipboard := false
 		clipMode := clipModeNone
 		tooltip
 	return

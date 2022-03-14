@@ -175,7 +175,6 @@ SetupClipLogGlobalVariables:
 	customQuickClipTableIsUsed := true		;Flag indicating the meaning of customQuickClipTablePos. true => index, false => table name
 
 	isLogging := true						;Flag for enabling/disabling hotkeys
-	scriptIsModifyingClipboard := false		;Flag for making sure only one thing is trying to modify the cliboard
 
 return
 
