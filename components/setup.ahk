@@ -69,6 +69,7 @@ SetupClipLogFinalValues:
 	clipModeDelete := "delete"
 
 	clipModePaused := "paused"
+	clipModeSearch := "search"
 
 	; Formats
 	fileTimeFormat := "yyyy-MM-dd_HH-mm-ss"

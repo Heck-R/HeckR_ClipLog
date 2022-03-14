@@ -16,3 +16,4 @@
 #include hotkeys.ahk
 
 #include clipCreatorGUI.ahk
+#include clipSearchGUI.ahk
