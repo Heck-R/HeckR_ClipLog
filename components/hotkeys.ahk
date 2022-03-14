@@ -157,6 +157,11 @@ return
 	showClipCreatorGUI()
 return
 
+#Enter::
+#NumpadEnter::
+	showClipSearchGUI()
+return
+
 #if
 
 ;------------------------------------------------
