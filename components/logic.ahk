@@ -15,7 +15,6 @@ deleteOldLogFiles() {
 		clipFiles := newClipFiles
 		newClipFiles := []
 	}
-
 }
 
 ;-------------------------------------------------------
@@ -45,10 +44,10 @@ hasClipFile(index) {
 	return (index >= 0 && index < clipFiles.count() && index < maxClipFileNum)
 }
 
-setClipCursorPos(index, new := false) {
+setClipCursorPos(index, force := false) {
 	global
 	
-	if ((index != clipCursorPos || new == true) && hasClipFile(index)) {
+	if ((index != clipCursorPos || force == true) && hasClipFile(index)) {
 		clipCursorPos := index
 		clipType := getExtension(getClipFileName(clipCursorPos))
 		return true
@@ -79,8 +78,8 @@ getExtension(fileName) {
 	return fileNameArr[fileNameArr.MaxIndex()]
 }
 
-getUniqueFileExtension(extLessFileWithPath) {
-	Loop, Files, %extLessFileWithPath%.*
+getUniqueFileExtension(extLessFilePath) {
+	Loop, Files, %extLessFilePath%.*
 	{
 		return getExtension(A_LoopFileName)
 	}
@@ -112,29 +111,30 @@ getFullPathOfQuickClip(place) {
 	return quickClipFile . "." . quickClipType
 }
 
-readClipFromFile(filePathToRead) {
+getClipFromFile(filePath, ByRef variableToSet) {
 	global
 
 	try {
-		FileRead, Clipboard, *c %filePathToRead%
+		FileRead, variableToSet, *c %filePath%
 	} catch e {
-		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePathToRead%
+		MsgBox, %errorCantReadClipFile%`n`nFile:`n%filePath%
 		Reload
 	}
 }
 
-loadClipDataWithoutSaving(data, isFilePath = false) {
+setClipboardFromDataWithoutLogging(data) {
 	global
 	
 	OnClipboardChange("saveClipb", 0)
-	
-	if (isFilePath) {
-		readClipFromFile(data)
-	} else {
-		Clipboard := data
-	}
-	
+	Clipboard := data
 	OnClipboardChange("saveClipb")
+}
+
+setClipboardFromFileWithoutLogging(filePath) {
+	global
+	
+	getClipFromFile(filePath, clipFileData)
+	setClipboardFromDataWithoutLogging(clipFileData)
 }
 
 ;------------------------------------------------
@@ -246,7 +246,7 @@ changeClip(place = "", force = false, showPreview = true) {
 	}
 	
 	if (changed) {
-		loadClipDataWithoutSaving(getClipFilePath(clipCursorPos), true)
+		setClipboardFromFileWithoutLogging(getClipFilePath(clipCursorPos))
 	}
 
 	if (showPreview) {
@@ -345,11 +345,11 @@ instantPaste(place) {
 	if (hasClipFile(place)) {
 		clipSave := ClipboardAll
 		
-		loadClipDataWithoutSaving(clipLogDir . getClipFileName(place), true)
+		setClipboardFromFileWithoutLogging(getClipFilePath(place))
 		Send, ^v
 		waitForClipboard()
 
-		loadClipDataWithoutSaving(clipSave)
+		setClipboardFromDataWithoutLogging(clipSave)
 
 		gosub setStateReady
 	}
@@ -374,7 +374,8 @@ AddClipFromQuickClip(quickClipIndex) {
 
 
 	quickClipPath := getFullPathOfQuickClip(quickClipIndex)
-	readClipFromFile(quickClipPath)
+	getClipFromFile(quickClipPath, clipFileData)
+	Clipboard := clipFileData
 	
 	peekQuickClip(quickClipIndex, notifySavedHSlot)
 	
@@ -417,7 +418,7 @@ deleteClip(place = "", maintainCursorPos = false) {
 		if (hasClipFile(placeToMove)) {
 			changeClip(placeToMove, true, false)
 		} else {
-			loadClipDataWithoutSaving("")
+			setClipboardFromDataWithoutLogging("")
 
 			Tooltip % deletedClipText . "`nNo clip is left to change to"
 			return
@@ -485,7 +486,7 @@ setQuickClip(place, dataToUse = false) {
 		clipSave := ClipboardAll
 		Clipboard := dataToUse
 		FileAppend, %ClipboardAll%, %destinationFile%
-		loadClipDataWithoutSaving(clipSave)
+		setClipboardFromDataWithoutLogging(clipSave)
 	}
 
 
@@ -507,14 +508,14 @@ peekQuickClip(place, customHeader = "") {
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
-		loadClipDataWithoutSaving(quickClipPath, true)
+		setClipboardFromFileWithoutLogging(quickClipPath)
 
 		previewHeader := getQuickClipCurrentSlotString(place)
 		if (customHeader != "")
 			previewHeader := customHeader
 		showClipPreview(previewHeader, getExtension(quickClipPath))
 
-		loadClipDataWithoutSaving(clipSave)
+		setClipboardFromDataWithoutLogging(clipSave)
 	}
 	else {
 		GDIP_Clean()
@@ -539,11 +540,11 @@ pasteQuickClip(place) {
 		clipSave := ClipboardAll
 
 		quickClipPath := getFullPathOfQuickClip(place)
-		loadClipDataWithoutSaving(quickClipPath, true)
+		setClipboardFromFileWithoutLogging(quickClipPath)
 		Send, ^v
 		waitForClipboard()
 
-		loadClipDataWithoutSaving(clipSave)
+		setClipboardFromDataWithoutLogging(clipSave)
 	}
 	
 	gosub setStateReady
