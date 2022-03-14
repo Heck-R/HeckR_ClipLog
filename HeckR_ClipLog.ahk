@@ -11,8 +11,8 @@
 
 #include scriptSettings.ahk
 
-#include clipCreatorGUI.ahk
-
 #include setup.ahk
 #include logic.ahk
 #include hotkeys.ahk
+
+#include clipCreatorGUI.ahk

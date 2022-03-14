@@ -2,54 +2,58 @@
 showClipCreatorGUI(createAsQuickClip = false) {
     global
 
-    Gui New
-    Gui +Resize MinSize240x176
-    Gui Font, s11
-    Gui Add, Text, hWndhTxtText x0 y4 w240 h20 +0x1, Enter the clipboard content
-    Gui Font
-    Gui Add, Edit, hWndhEdtValue x8 y24 w224 h108 vEditContent -Wrap
-    Gui Add, Button, hWndhBtnOk x8 y144 w80 h24 gOkClick, OK
-    Gui Add, Button, hWndhBtnCancel x96 y144 w80 h24 gCancelClick, Cancel
+    Gui ClipCreator:New
+    Gui ClipCreator:+Resize MinSize240x176
+    Gui ClipCreator:Font, s11
+    Gui ClipCreator:Add, Text, hWndhClipCreatorInstructionText x0 y4 w240 h20 +0x1, Enter the clipboard content
+    Gui ClipCreator:Font
+    Gui ClipCreator:Add, Edit, hWndhClipCreatorClipContentEdit x8 y24 w224 h108 vEditContent -Wrap VScroll HScroll
+    Gui ClipCreator:Add, Button, hWndhClipCreatorOkButton x8 y144 w80 h24 gClipCreatorOkClick, OK
+    Gui ClipCreator:Add, Button, hWndhClipCreatorCancelButton x96 y144 w80 h24 gClipCreatorCancelClick, Cancel
     if (createAsQuickClip) {
-        Gui Font, s10
-        Gui Add, DropDownList, hWndhDDLItems x200 y144 w32 vQuickClipSlot, 0||1|2|3|4|5|6|7|8|9
-        Gui Font
+        Gui ClipCreator:Font, s10
+        Gui ClipCreator:Add, DropDownList, hWndhDDLItems x200 y144 w32 vQuickClipSlot, 0||1|2|3|4|5|6|7|8|9
+        Gui ClipCreator:Font
     }
+    
+    ; Load default GUI control values
+    Gui ClipCreator:Submit, NoHide
 
-    Gui Show, w240 h176, Clip Creator
-    return
-
-    GuiSize:
-        if (A_EventInfo == 1) {
-            return
-        }
-
-        AutoXYWH("w*", hTxtText)
-        AutoXYWH("wh*", hEdtValue)
-        AutoXYWH("y", hBtnOk)
-        AutoXYWH("y", hBtnCancel)
-
-        if (createAsQuickClip)
-            AutoXYWH("xy", hDDLItems)
-    return
-
-    OkClick:
-        GuiControlGet EditContent
-        GuiControlGet QuickClipSlot
-
-        if QuickClipSlot is Integer
-        {
-            setQuickClip(QuickClipSlot, EditContent)
-        } else {
-            Clipboard := EditContent
-        }
-        
-        Gui Destroy
-    return
-
-    CancelClick:
-    GuiEscape:
-    GuiClose:
-        Gui Destroy
-    return
+    Gui ClipCreator:Show, w240 h176, Clip Creator
 }
+
+ClipCreatorGuiSize() {
+    global
+
+    if (A_EventInfo == 1)
+        return
+
+    AutoXYWH("w*", hClipCreatorInstructionText)
+    AutoXYWH("wh*", hClipCreatorClipContentEdit)
+    AutoXYWH("y", hClipCreatorOkButton)
+    AutoXYWH("y", hClipCreatorCancelButton)
+
+    if QuickClipSlot is Integer
+        AutoXYWH("xy", hDDLItems)
+}
+
+ClipCreatorOkClick() {
+    global
+    
+    Gui ClipCreator:Submit, NoHide
+
+    if QuickClipSlot is Integer
+    {
+        setQuickClip(QuickClipSlot, EditContent)
+    } else {
+        Clipboard := EditContent
+    }
+    
+    Gui ClipCreator:Destroy
+}
+
+ClipCreatorCancelClick:
+ClipCreatorGuiEscape:
+ClipCreatorGuiClose:
+    Gui ClipCreator:Destroy
+return
