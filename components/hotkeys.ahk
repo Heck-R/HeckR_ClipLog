@@ -1,5 +1,5 @@
 
-#if (clipMode != clipModeNone) and (clipMode != clipModePaste) and (clipMode != clipModePaused)
+#if (clipMode != clipModeNone) and (clipMode != clipModePaste) and (clipMode != clipModePaused) and (clipMode != clipModeSearch)
 
 	Shift Up::
 	Ctrl Up::
