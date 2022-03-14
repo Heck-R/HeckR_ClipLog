@@ -22,6 +22,9 @@ showClipCreatorGUI(createAsQuickClip = false) {
     Gui ClipCreator:Show, w240 h176, Clip Creator
 }
 
+;------------------------------------------------
+; Events
+
 ClipCreatorGuiSize() {
     global
 
