@@ -21,6 +21,16 @@ Change clipboard content, while moving across the history, and showing the previ
 - **Win + (UpArrow / DownArrow / MiddleMouseButton)**: Only show the preview of the current clip ([note](#Preview-of-current-clip))
 - **Win + \<Any number\>**: Go to the clip with the number pressed
 
+Alternatively it is possible to search in the history with a GUI
+
+- **Win + Enter**: The *Clip Search* window pops up, which can be used to search for clips  \
+Functionality:
+  - The search term can be an [AutoHotkey RegEx](https://www.autohotkey.com/docs/misc/RegEx-QuickRef.htm) (which of course includes ordinary text)
+  - Using no search term lists all clips
+  - Double clicking on a search result copies it to the clipboard
+  - Only the clips that are classified as text clipboard data (according to Windows) are available in this window
+  - Since the clips are stored as files, on the computer storage, the speed of the storage device impacts this search heavily
+
 In some cases you might want to reuse the few latest clips, but you dont want to switch to them before copying. In this case, you can just instant copy them
 
 - **Win + Alt + \<Any number\>**: Instantly paste the clip from the history without changing the content on the clipboard ([note](#Instant-paste-delay))
