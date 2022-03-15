@@ -80,6 +80,10 @@ SetupClipLogFinalValues:
 	divisionalForClipboardWait := 20000
     maxClipFileNum := 1000		; How many clips are preserved at most (read from config)
 
+	; GUI
+    GUI_GAP_SIZE := 8
+    GUI_INPUT_LINE_HEIGHT := 24
+
 	; Messages
     errorCantReadClipFile := "Can't read the file for some reason`nIn order to avoid further problems the file gets deleted and the script restarts"
 	errorCantSetQSlot := "Can't set quick slot"
@@ -189,22 +193,19 @@ ReadConfigFile:
 	}
 
 	; Init quick clip list names
-	IniRead, customQuickClipTableListString, %iniFilePath%, settings, customQuickClipTables, %A_Space%
+	customQuickClipTableListString := getConfigValue(iniFilePath, "settings", "customQuickClipTables", "", true)
 	customQuickClipTableList := StrSplit(customQuickClipTableListString, ",", " `t")
 	; Always start with default
 	customQuickClipTableList.InsertAt(1, "default")
 
 	; Read custom history size
-	IniRead, maxNumberOfClipFilesIniValue, %iniFilePath%, settings, maxNumberOfClipFiles, %A_Space%
-	if (maxNumberOfClipFilesIniValue != "") {
-		if maxNumberOfClipFilesIniValue is Integer
-		{
-			maxClipFileNum := maxNumberOfClipFilesIniValue
-		} else {
-			MsgBox % errorWrongConfigValue . "`nValue of 'maxNumberOfClipFiles' must be an integer, but it was '" . maxNumberOfClipFilesIniValue . "'`n`nThe program terminates..."
-			ExitApp
-		}
-	}
+	maxNumberOfClipFilesIniValue := getConfigValue(iniFilePath, "settings", "maxNumberOfClipFiles", "1000", true, "^\d+$")
+
+	; Read clip search GUI positioning
+	SEARCH_GUI_WIDTH := 	getConfigValue(iniFilePath, "search_window", "initialWidth", 		"500",		true, "^\d+$")
+	SEARCH_GUI_HEIGHT := 	getConfigValue(iniFilePath, "search_window", "initialHeight", 		"300",		true, "^\d+$")
+	SEARCH_GUI_X := 		getConfigValue(iniFilePath, "search_window", "initialPositionX", 	"Center",	true, "^i)(\d+|Center)$")
+	SEARCH_GUI_Y := 		getConfigValue(iniFilePath, "search_window", "initialPositionY", 	"0",		true, "^i)(\d+|Center)$")
 	
 return
 

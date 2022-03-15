@@ -1,35 +1,35 @@
 ﻿
 showClipSearchGUI() {
-    WINDOW_WIDTH := 500
-    WINDOW_HEIGHT := 300
-    GAP_SIZE := 8
-    LINE_HEIGHT := 24
+    global
 
     CANCEL_BUTTON_WIDTH := 80
-    CANCEL_BUTTON_X := WINDOW_WIDTH - CANCEL_BUTTON_WIDTH - GAP_SIZE
+    CANCEL_BUTTON_X := SEARCH_GUI_WIDTH - CANCEL_BUTTON_WIDTH - GUI_GAP_SIZE
 
     SEARCH_BUTTON_WIDTH := 80
-    SEARCH_BUTTON_X := CANCEL_BUTTON_X - SEARCH_BUTTON_WIDTH - GAP_SIZE
+    SEARCH_BUTTON_X := CANCEL_BUTTON_X - SEARCH_BUTTON_WIDTH - GUI_GAP_SIZE
 
-    SEARCH_EDIT_WIDTH := WINDOW_WIDTH - (WINDOW_WIDTH - SEARCH_BUTTON_X) - 2*GAP_SIZE
+    SEARCH_EDIT_WIDTH := SEARCH_GUI_WIDTH - (SEARCH_GUI_WIDTH - SEARCH_BUTTON_X) - 2*GUI_GAP_SIZE
 
-    CLIP_LIST_X := GAP_SIZE
-    CLIP_LIST_Y := LINE_HEIGHT + 2*GAP_SIZE
-    CLIP_LIST_WIDTH := WINDOW_WIDTH - 2*GAP_SIZE
-    CLIP_LIST_HEIGHT := WINDOW_HEIGHT - LINE_HEIGHT - 3*GAP_SIZE
+    CLIP_LIST_X := GUI_GAP_SIZE
+    CLIP_LIST_Y := GUI_INPUT_LINE_HEIGHT + 2*GUI_GAP_SIZE
+    CLIP_LIST_WIDTH := SEARCH_GUI_WIDTH - 2*GUI_GAP_SIZE
+    CLIP_LIST_HEIGHT := SEARCH_GUI_HEIGHT - GUI_INPUT_LINE_HEIGHT - 3*GUI_GAP_SIZE
+
+    MIN_WIDTH := 100 + SEARCH_BUTTON_WIDTH + CANCEL_BUTTON_WIDTH + 4*GUI_GAP_SIZE
+    MIN_HEIGHT := 6*GUI_INPUT_LINE_HEIGHT + 3*GUI_GAP_SIZE
 
     Gui ClipSearch:New
-    Gui ClipSearch:+Resize
+    Gui ClipSearch:+Resize MinSize%MIN_WIDTH%x%MIN_HEIGHT%
     Gui ClipSearch:Font, s11
-    Gui ClipSearch:Add, Edit,       hWndhClipSearchEdit         vSearchRegex                    x%GAP_SIZE%         y%GAP_SIZE%     w%SEARCH_EDIT_WIDTH%    h%LINE_HEIGHT%
-    Gui ClipSearch:Add, Button,     hWndhClipSearchButton       gClipSearchUpdateListView       x%SEARCH_BUTTON_X%  y%GAP_SIZE%     w%SEARCH_BUTTON_WIDTH%  h%LINE_HEIGHT%,     &Search
-    Gui ClipSearch:Add, Button,     hWndhClipSearchCancelButton gClipSearchCancelUpdateListView x%CANCEL_BUTTON_X%  y%GAP_SIZE%     w%CANCEL_BUTTON_WIDTH%  h%LINE_HEIGHT%,     &Cancel
-    Gui ClipSearch:Add, ListView,   hWndhClipSearchListView     gClipSearchListViewEvent        x%GAP_SIZE%         y%CLIP_LIST_Y%  w%CLIP_LIST_WIDTH%      h%CLIP_LIST_HEIGHT%  +Grid -Multi -HScroll -VScroll -0x200000 +LV0x4000, Index|Clip File|Content
+    Gui ClipSearch:Add, Edit,       hWndhClipSearchEdit         vSearchRegex                    x%GUI_GAP_SIZE%     y%GUI_GAP_SIZE%     w%SEARCH_EDIT_WIDTH%    h%GUI_INPUT_LINE_HEIGHT%
+    Gui ClipSearch:Add, Button,     hWndhClipSearchButton       gClipSearchUpdateListView       x%SEARCH_BUTTON_X%  y%GUI_GAP_SIZE%     w%SEARCH_BUTTON_WIDTH%  h%GUI_INPUT_LINE_HEIGHT%,   &Search
+    Gui ClipSearch:Add, Button,     hWndhClipSearchCancelButton gClipSearchCancelUpdateListView x%CANCEL_BUTTON_X%  y%GUI_GAP_SIZE%     w%CANCEL_BUTTON_WIDTH%  h%GUI_INPUT_LINE_HEIGHT%,   &Cancel
+    Gui ClipSearch:Add, ListView,   hWndhClipSearchListView     gClipSearchListViewEvent        x%GUI_GAP_SIZE%     y%CLIP_LIST_Y%      w%CLIP_LIST_WIDTH%      h%CLIP_LIST_HEIGHT%     +Grid -Multi -HScroll -VScroll -0x200000 +LV0x4000, Index|Clip File|Content
     ;SendMessage 0x1501, 1, "Search",, ahk_id %hClipSearchEdit% ; EM_SETCUEBANNER
 
     ClipSearchGUIApplyIdleMode()
 
-    Gui ClipSearch:Show, w%WINDOW_WIDTH% h%WINDOW_HEIGHT%, Clip Search
+    Gui ClipSearch:Show, x%SEARCH_GUI_X% y%SEARCH_GUI_Y% w%SEARCH_GUI_WIDTH% h%SEARCH_GUI_HEIGHT%, Clip Search
 }
 
 ;------------------------------------------------
