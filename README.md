@@ -97,23 +97,50 @@ There are 2 types of quick clip tables:
 
 There are a few configuration options available for this script. All of these must be located in a configuration ini with the same name as the script (HeckR_ClipLog.ini)
 
-As the extension suggests, the configuration file must be in `.ini` format  \
-Every setting must be placed under the `settings` section
+As the extension suggests, the configuration file must be in `.ini` format
 
 The existence of the configuration ini is semi-mandatory  \
 While it is not necessary to configure anything for the script to be functional, the configuration file will be created on the script's startup if it does not exist
 
-## Keys
+## Sections
+### `settings`
 
-- **maxNumberOfClipFiles**  \
+Contains general settings
+
+- `maxNumberOfClipFiles`  \
   *Description*: The maximum number of clip files to store in the history  \
   *Format*: `Integer`  \
   *Default*: `1000`
 
-- **customQuickClipTables**  \
+- `customQuickClipTables`  \
   *Description*: A list of custom quick clip table names to be available  \
   *Format*: A comma separated string  \
   *Default*: \<empty string\>
+
+### `creator_window`
+### `search_window`
+
+Both sections have the same kind of settings
+
+- `initialWidth`  \
+  *Description*: Window width in pixels  \
+  *Format*: `Integer`  \
+  *Default*: `500`
+
+- `initialHeight`  \
+  *Description*: Window height in pixels  \
+  *Format*: `Integer`  \
+  *Default*: `300`
+
+- `initialPositionX`  \
+  *Description*: Window's horizontal position in pixels, or "Center", for aligning it to the middle  \
+  *Format*: `Integer` | "Center"  \
+  *Default*: `Center`
+
+- `initialPositionY`  \
+  *Description*: Window's vertical position in pixels, or "Center", for aligning it to the middle  \
+  *Format*: `Integer` | "Center"  \
+  *Default*: `0`
 
 # Notes
 
