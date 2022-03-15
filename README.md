@@ -1,3 +1,34 @@
+# Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [HeckR_ClipLog](#heckr_cliplog)
+- [Functionallity & Usage](#functionallity--usage)
+  - [1. Standard clipboard history](#1-standard-clipboard-history)
+    - [Hotkeys](#hotkeys)
+  - [2. Quick clipboard](#2-quick-clipboard)
+    - [Quick Clip Tables](#quick-clip-tables)
+    - [Hotkeys](#hotkeys-1)
+  - [Additional functionallities](#additional-functionallities)
+    - [Hotkeys](#hotkeys-2)
+- [Settings](#settings)
+  - [Sections](#sections)
+    - [`settings`](#settings-1)
+    - [`creator_window`](#creator_window)
+    - [`search_window`](#search_window)
+- [Notes](#notes)
+  - [Previews](#previews)
+  - [Preview of current clip](#preview-of-current-clip)
+  - [Instant paste delay](#instant-paste-delay)
+  - [Loading back the last saved clip after starting HeckR_ClipLog](#loading-back-the-last-saved-clip-after-starting-heckr_cliplog)
+  - [Microsoft's Office hotkey interference](#microsofts-office-hotkey-interference)
+  - [Responsibility](#responsibility)
+  - [Key namings](#key-namings)
+    - [MiddleMouseButton](#middlemousebutton)
+    - [MouseForward](#mouseforward)
+    - [MouseBackward](#mousebackward)
+- [Dependencies](#dependencies)
+- [Donate](#donate)
+
 # HeckR_ClipLog
 
 HeckR_ClipLog is not only a log as it's name would suggest, but a full fledged clipboard manager which can be controlled through hotkeys.
