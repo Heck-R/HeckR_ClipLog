@@ -15,17 +15,20 @@
     - [`settings`](#settings-1)
     - [`creator_window`](#creator_window)
     - [`search_window`](#search_window)
+- [Known Issues](#known-issues)
+  - [Microsoft's Office hotkey interference](#microsofts-office-hotkey-interference)
+  - [Interference with some applications' UI](#interference-with-some-applications-ui)
+  - [Hotkeys not working](#hotkeys-not-working)
 - [Notes](#notes)
   - [Previews](#previews)
   - [Preview of current clip](#preview-of-current-clip)
   - [Instant paste delay](#instant-paste-delay)
   - [Loading back the last saved clip after starting HeckR_ClipLog](#loading-back-the-last-saved-clip-after-starting-heckr_cliplog)
-  - [Microsoft's Office hotkey interference](#microsofts-office-hotkey-interference)
-  - [Responsibility](#responsibility)
   - [Key namings](#key-namings)
     - [MiddleMouseButton](#middlemousebutton)
     - [MouseForward](#mouseforward)
     - [MouseBackward](#mousebackward)
+- [Responsibility](#responsibility)
 - [Dependencies](#dependencies)
 - [Donate](#donate)
 
@@ -121,8 +124,8 @@ There are 2 types of quick clip tables:
 
 ### Hotkeys
 
-- **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionallities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
-- **Win + H**: Shows a helping tooltip about all of the availbale hotkeys
+- **Win + Shift + L**: Turns on/off the logging of the clipboard and the other hotkeys of this script (a tooltip shows wether the functionalities are turned on or off). When turning it back on, anything on the clipboard is deleted, and if there was a selected clip in the history before turning the script off, the clipboard resets to that clip (the previous position in the history is also being retained)
+- **Win + H**: Shows a helping tooltip about all of the available hotkeys
 
 # Settings
 
@@ -173,6 +176,31 @@ Both sections have the same kind of settings
   *Format*: `Integer` | "Center"  \
   *Default*: `0`
 
+# Known Issues
+
+## Microsoft's Office hotkey interference
+
+Microsoft recently put an inbuilt hotkey into Windows, which you have to manually disable if you do not wish to have MS Office pop up every time. You can find some information about this on the following page: [HowToGeek - How to Remap the Office Key on Your Keyboard](https://www.howtogeek.com/445318/how-to-remap-the-office-key-on-your-keyboard/)
+
+The method I recommend is using the `REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32` command in your PowerShell console.
+
+## Interference with some applications' UI
+
+In order to be able to display pictures, an invisible, non-interactive overlay window is being used.
+
+Due to its non-interactive nature this should not cause any issues (which is indeed the case most of the time), however there are some rare cases when some apps that rely on overlays get confused due to the mentioned invisible one
+
+Also, some anti-cheat detection software may not like the invisible overlay. I've personally never been banned from anywhere, but be warned, that it could be detected as something shady
+
+This issue is semi-fixed in `v2.3.1`  \
+Since then, the overlay is only shown when the history is being checked, so there should be no interference issues, since a normal person interacts with only one thing at the time (hopefully :D)
+
+## Hotkeys not working
+
+In order for AutoHotkey to be able to intercept the keys (and thus recognize the hotkeys) one must run the script with the same privileges as the in-focus application
+
+So in order for the hotkeys to work when an app is running with admin privileges, the script must also be run with admin privileges
+
 # Notes
 
 ## Previews
@@ -188,20 +216,11 @@ While the UpArrow, DownArrow and the MiddleMouseButton can usually be used inter
 
 ## Instant paste delay
 
-There is a normally unnoticable delay before you can do something again, which is due to this functionallity should not really be possible, thus it uses a little workaround
+There is a normally unnoticeable delay before you can do something again, which is due to this functionality should not really be possible, thus it uses a little workaround
 
 ## Loading back the last saved clip after starting HeckR_ClipLog
 
-The intended use of this script is having it automatically started my windows, but in this case it is not possible to automatically load the last clip, since windows locks the files until the user logs in. This means that even if there is a clip in the history with the current index, it is not loaded yet. This is automatically fixed if something is being copied, or any functionallity is being used which loads a clip
-
-## Microsoft's Office hotkey interference
-
-Microsoft recently put an inbuilt hotkey into Windows, which you have to manually disable if you do not wish to have MS Office pop up every time. You can find some information about this on the following page: [HowToGeek - How to Remap the Office Key on Your Keyboard](https://www.howtogeek.com/445318/how-to-remap-the-office-key-on-your-keyboard/)
-
-The method I recommend is using the `REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32` command in your PowerShell console.
-
-## Responsibility
-Only use or do anything at your own risk. I do not take responsibility for any damage which occours from using or following anything here in any way, shape or form
+The intended use of this script is having it automatically started my windows, but in this case it is not possible to automatically load the last clip, since windows locks the files until the user logs in. This means that even if there is a clip in the history with the current index, it is not loaded yet. This is automatically fixed if something is being copied, or any functionality is being used which loads a clip
 
 ## Key namings
 
@@ -216,6 +235,9 @@ On better / gaming mouses there are usually 2 extra buttons at the thumb. This i
 ### MouseBackward
 
 On better / gaming mouses there are usually 2 extra buttons at the thumb. This is usually the one further from the user
+
+# Responsibility
+Only use or do anything at your own risk. I do not take responsibility for any damage which occurs from using or following anything here in any way, shape or form
 
 # Dependencies
 
